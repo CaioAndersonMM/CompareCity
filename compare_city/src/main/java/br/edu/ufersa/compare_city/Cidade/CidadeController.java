@@ -1,4 +1,4 @@
-package br.edu.ufersa.compare_city.Cidade;
+package br.edu.ufersa.compare_city.cidade;
 
 import java.io.File;
 import java.io.IOException;

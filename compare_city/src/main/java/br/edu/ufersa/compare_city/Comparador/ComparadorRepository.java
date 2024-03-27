@@ -1,4 +1,4 @@
-package br.edu.ufersa.compare_city.Comparador;
+package br.edu.ufersa.compare_city.comparador;
 
 public class ComparadorRepository {
 

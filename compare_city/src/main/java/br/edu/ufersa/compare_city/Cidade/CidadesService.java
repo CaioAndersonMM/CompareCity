@@ -1,4 +1,4 @@
-package br.edu.ufersa.compare_city.Cidade;
+package br.edu.ufersa.compare_city.cidade;
 
 import java.util.ArrayList;
 
@@ -13,8 +13,8 @@ public class CidadesService {
         cidadeRepository = new CidadeRepository();
     }
 
-    public void buscarCidade(String cidade) {
-        cidadeRepository.buscarCidade(cidade);
+    public void buscarCidade(String cidade, String uf) {
+        // cidadeRepository.buscarCidade(cidade, uf);
     }
 
     public Cidade getCidade() {
