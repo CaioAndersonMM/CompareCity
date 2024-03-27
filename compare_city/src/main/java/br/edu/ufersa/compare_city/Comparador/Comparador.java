@@ -1,6 +1,6 @@
-package br.edu.ufersa.compare_city.Comparador;
+package br.edu.ufersa.compare_city.comparador;
 
-import br.edu.ufersa.compare_city.Cidade.Cidade;
+import br.edu.ufersa.compare_city.cidade.Cidade;
 
 public class Comparador {
 
