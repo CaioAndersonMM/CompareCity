@@ -1,0 +1,64 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.city-inputs {
+    margin-bottom: 20px;
+}
+
+.city-inputs input {
+    width: calc(50% - 5px);
+    margin-right: 5px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.city-inputs button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.city-inputs button:hover {
+    background-color: #0056b3;
+}
+
+.result {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.result h2 {
+    text-align: center;
+}
+
+select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    width: 200px; /* Ajuste conforme necessário */
+    appearance: none; /* Remove o estilo padrão do sistema operacional */
+    background-color: white; /* Cor de fundo */
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="%23000000" d="M7 10l5 5 5-5H7z"/%3E%3C/svg%3E'); /* Ícone de seta para baixo */
+    background-repeat: no-repeat;
+    background-position: right 10px center; /* Posição do ícone */
+    cursor: pointer; /* Mostra o cursor como uma mãozinha quando passar por cima */
+}
