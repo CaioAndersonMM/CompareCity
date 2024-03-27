@@ -1,16 +1,12 @@
 import json
 import re
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-import sys
-
-
 driver = webdriver.Chrome()
-
-#BRUNO SUGERIU FAZER UM SISTEMA DE CONSULTA EM BATCH ai usaria LISTA encadeada!
 
 mapeamento_campos = {
     "População no último censo": "populacao",
@@ -46,25 +42,20 @@ mapeamento_campos = {
 }
 
 def coletarDados(cidade, estado):
-
     driver.get(f"https://cidades.ibge.gov.br/brasil/{estado}/{cidade}/panorama")
 
     indice_cabecalho = 0
     data = {'uf': estado}
-    forJson = False # Servirá de contador para escrita no arquivo
-    indicadorAnterior = '' # Texto capturado anterior que será o campo do Json
-    
-    for _ in range(6):
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//section[@id='dados']//tr"))
-        )
+    forJson = False
+    indicadorAnterior = ''
 
-        # Todas as células (td) dentro das linhas da tabela
+    for _ in range(6):
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//section[@id='dados']//tr")))
+
         celulas = driver.find_elements(By.XPATH, "//section[@id='dados']//tr/td")
-        textos_celulas = []
 
         for celula in celulas:
-            if celula.text.strip():  # Ignorar células vazias
+            if celula.text.strip():
                 if forJson is True:
                     data[mapeamento_campos[indicadorAnterior]] = celula.text
                     forJson = False
@@ -72,26 +63,21 @@ def coletarDados(cidade, estado):
                     padrao_ano = r'\[\d{4}\]'
                     indicadorAnterior = re.sub(padrao_ano, '', celula.text).strip()
                     forJson = True
-                    
-                textos_celulas.append(celula.text)
-
-        texto_completo = "\n".join(textos_celulas)
-        print(texto_completo.encode('utf-8').decode('utf-8'))
 
         indice_cabecalho += 1
 
         if not clicar_proximo_cabecalho(indice_cabecalho):
-            break  # Se não houver mais cabeçalhos, saia do loop
-    
+            break
+
     dataJson = {cidade: data}
-    
-    with open("dados.json", "w") as file:
-        json.dump(dataJson, file)
+
+    with open("dados.json", "w", encoding="utf-8") as file:
+        json.dump(dataJson, file, ensure_ascii=False, indent=4)
 
 def clicar_proximo_cabecalho(indice):
     try:
         cabecalhos = driver.find_elements(By.CSS_SELECTOR, "tr.lista__cabecalho")
-        
+
         if indice < len(cabecalhos):
             cabecalhos[indice].click()
             return True
@@ -103,10 +89,11 @@ def clicar_proximo_cabecalho(indice):
         return False
 
 try:
+    
     coletarDados("jucurutu", "rn")
-    
+
     coletarDados("mossoro", "rn")
-    
+
     driver.quit()
 
 except:
