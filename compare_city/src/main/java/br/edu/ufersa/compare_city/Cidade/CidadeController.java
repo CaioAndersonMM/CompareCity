@@ -1,4 +1,4 @@
-package br.edu.ufersa.compare_city.Cidade;
+package br.edu.ufersa.compare_city.cidade;
 
 import org.springframework.stereotype.Controller;
 // import org.springframework.web.bind.annotation.RequestMapping;
