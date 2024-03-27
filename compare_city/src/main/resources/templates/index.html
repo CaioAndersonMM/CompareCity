@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparação de Cidades</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Quais Cidades Você irá Comparar?</h1>
+        <div class="city-inputs">
+            <select id="state1" onchange="populateCities('city1', this.value)">
+                <option value="">Selecione um estado</option>
+            </select>
+            
+            <select id="city1" onchange="compareCities()">
+                <option value="">Selecionar Cidade</option>
+            </select>
+
+            <select id="state2" onchange="populateCities('city2', this.value)">
+                <option value="">Selecione um estado</option>
+            </select>
+
+            <select id="city2" onchange="compareCities()">
+                <option value="">Selecionar Cidade</option>
+            </select>
+
+            <br>
+
+            <button onclick="window.location.href='/cidades/comparar'">Comparar</button>
+
+            <button onclick="enviarParametros()">Comparar Parametros</button>
+            
+        </div>
+    </div>
+
+    <script>
+        const selectState1 = document.querySelector('#state1');
+        const selectState2 = document.querySelector('#state2');
+
+        function populateStateSelect() {
+            fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
+                .then(res => res.json())
+                .then(states => {
+                    states.forEach(state => {
+                        const option1 = document.createElement('option');
+                        const option2 = document.createElement('option');
+                        option1.setAttribute('value', state.sigla);
+                        option2.setAttribute('value', state.sigla);
+                        option1.textContent = state.nome;
+                        option2.textContent = state.nome;
+                        selectState1.appendChild(option1);
+                        selectState2.appendChild(option2);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erro ao obter estados:', error);
+                });
+        }
+
+        function populateCities(cityId, stateId) {
+            const selectCity = document.getElementById(cityId);
+            selectCity.innerHTML = "<option value=''>Selecionar cidade</option>";
+            if (stateId) {
+                fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${stateId}/municipios`)
+                .then(res => res.json())
+                .then(cities => {
+                    cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.setAttribute('value', city.id);
+                        option.textContent = city.nome;
+                        selectCity.appendChild(option);
+                    });
+                });
+            }
+        }
+
+
+        function enviarParametros() {
+            const estado1 = document.getElementById("state1").value;
+            const cidade1 = document.getElementById("city1").options[document.getElementById("city1").selectedIndex].textContent;
+            const estado2 = document.getElementById("state2").value;
+            const cidade2 = document.getElementById("city2").options[document.getElementById("city2").selectedIndex].textContent;
+
+            // Construir a URL com os parâmetros
+            const url = `/cidades/comparar?estado1=${estado1}&cidade1=${cidade1}&estado2=${estado2}&cidade2=${cidade2}`;
+
+            // Redirecionar para a URL
+            window.location.href = url;
+        }
+
+        populateStateSelect();
+    </script>
+</body>
+
+</html>
