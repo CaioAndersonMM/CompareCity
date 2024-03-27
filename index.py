@@ -5,8 +5,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+import sys
+
+
 driver = webdriver.Chrome()
 
+#BRUNO SUGERIU FAZER UM SISTEMA DE CONSULTA EM BATCH ai usaria LISTA encadeada!
 
 mapeamento_campos = {
     "População no último censo": "populacao",
@@ -41,30 +45,12 @@ mapeamento_campos = {
     "Sistema Costeiro-Marinho": "sistema_costeiro_marinho"
 }
 
+def coletarDados(cidade, estado):
 
-def clicar_proximo_cabecalho(indice):
-    try:
-        cabecalhos = driver.find_elements(By.CSS_SELECTOR, "tr.lista__cabecalho")
-        
-        if indice < len(cabecalhos):
-            cabecalhos[indice].click()
-            return True
-        else:
-            return False
-
-    except Exception as e:
-        print(f"Erro ao clicar no próximo cabeçalho: {e}")
-        return False
-
-try:
-    
-    cidade = "jucurutu"
-    uf = "rn"
-
-    driver.get(f"https://cidades.ibge.gov.br/brasil/{uf}/{cidade}/panorama")
+    driver.get(f"https://cidades.ibge.gov.br/brasil/{estado}/{cidade}/panorama")
 
     indice_cabecalho = 0
-    data = {'uf': uf}
+    data = {'uf': estado}
     forJson = False # Servirá de contador para escrita no arquivo
     indicadorAnterior = '' # Texto capturado anterior que será o campo do Json
     
@@ -96,11 +82,32 @@ try:
 
         if not clicar_proximo_cabecalho(indice_cabecalho):
             break  # Se não houver mais cabeçalhos, saia do loop
-
-finally:
-    driver.quit()
     
     dataJson = {cidade: data}
     
     with open("dados.json", "w") as file:
         json.dump(dataJson, file)
+
+def clicar_proximo_cabecalho(indice):
+    try:
+        cabecalhos = driver.find_elements(By.CSS_SELECTOR, "tr.lista__cabecalho")
+        
+        if indice < len(cabecalhos):
+            cabecalhos[indice].click()
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        print(f"Erro ao clicar no próximo cabeçalho: {e}")
+        return False
+
+try:
+    coletarDados("jucurutu", "rn")
+    
+    coletarDados("mossoro", "rn")
+    
+    driver.quit()
+
+except:
+    print('Falha nos Dados')
