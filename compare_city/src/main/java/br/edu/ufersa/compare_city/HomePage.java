@@ -1,15 +1,13 @@
 package br.edu.ufersa.compare_city;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping
+@Controller
 public class HomePage {
     
     @GetMapping("/")
     public String home() {
-        return "Página inicial do projeto";
+        return "index"; // Retorna o nome do arquivo HTML sem a extensão
     }
 }
