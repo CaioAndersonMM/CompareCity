@@ -6,10 +6,8 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class CidadeController {
-    
-    private CidadesService cidadesService;
 
-    
+    private CidadesService cidadesService;
 
     public CidadeController() {
     }
@@ -18,6 +16,4 @@ public class CidadeController {
         this.cidadesService = cidadesService;
     }
 
-
-    
 }

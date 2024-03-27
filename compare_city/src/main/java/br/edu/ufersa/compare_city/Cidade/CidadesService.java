@@ -9,12 +9,9 @@ public class CidadesService {
 
     private CidadeRepository cidadeRepository;
 
-
     public CidadesService() {
         cidadeRepository = new CidadeRepository();
     }
-
-
 
     public void buscarCidade(String cidade) {
         cidadeRepository.buscarCidade(cidade);
@@ -27,5 +24,5 @@ public class CidadesService {
     public ArrayList<Cidade> getListaCidades() {
         return cidadeRepository.getListaCidades();
     }
-    
+
 }

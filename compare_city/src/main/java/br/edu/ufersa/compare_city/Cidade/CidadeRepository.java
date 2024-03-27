@@ -10,8 +10,6 @@ public class CidadeRepository {
     private Cidade cidadeBuscada;
     private static ArrayList<Cidade> cidadesBuscadas = new ArrayList<>();
 
-
-
     public CidadeRepository() {
 
     }
@@ -19,8 +17,6 @@ public class CidadeRepository {
     public CidadeRepository(String cidade) {
         buscarCidade(cidade);
     }
-
-
 
     /** busca a cidade no site do 
      * {@code IBGE cidades} e atribui o resultado a 
