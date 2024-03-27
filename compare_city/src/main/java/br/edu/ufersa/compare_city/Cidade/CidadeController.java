@@ -56,11 +56,11 @@ public class CidadeController {
                 cidade.setDocentesMedio(Integer.parseInt(cidadeInfo.get("docentes_medio").replaceAll("[^0-9]", "")));
                 cidade.setEstabelecimentosFundamental(Integer.parseInt(cidadeInfo.get("estabelecimentos_ensino_fundamental").replaceAll("[^0-9]", "")));
                 cidade.setEstabelecimentosMedio(Integer.parseInt(cidadeInfo.get("estabelecimentos_ensino_medio").replaceAll("[^0-9]", "")));
-                cidade.setPibPerCapta(Double.parseDouble(cidadeInfo.get("pib_percapita").replaceAll("[^0-9.,]", "").replaceFirst(",", ".").replaceAll(",", "").trim()));
+                cidade.setPibPerCapta(Double.parseDouble(cidadeInfo.get("pib_percapita").replaceAll("[^0-9.,]", "").split(",")[0].replaceAll(",", "").trim()));
                 cidade.setPercentualReceitasExternas(Double.parseDouble(cidadeInfo.get("percentual_receitas_externas").replaceAll("[^0-9.,]", "").replace(',', '.')));
                 cidade.setIdh(Double.parseDouble(cidadeInfo.get("idh").replaceAll("[^0-9.,]", "").replace(',', '.')));
-                cidade.setReceitasRealizadas(Double.parseDouble(cidadeInfo.get("receitas_realizadas").replaceAll("[^0-9.,]", "").replace(',', '.')));
-                cidade.setDespesasEmpenhadas(Double.parseDouble(cidadeInfo.get("despesas_empenhadas").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setReceitasRealizadas(Double.parseDouble(cidadeInfo.get("receitas_realizadas").replaceAll("[^0-9.,]", "").split(",")[0].replaceAll(",", "").trim()));
+                cidade.setDespesasEmpenhadas(Double.parseDouble(cidadeInfo.get("despesas_empenhadas").replaceAll("[^0-9.,]", "").split(",")[0].replaceAll(",", "").trim()));
                 cidade.setMortalidadeInfantil(Double.parseDouble(cidadeInfo.get("mortalidade_infantil").replaceAll("[^0-9.,]", "").replace(',', '.')));
                 cidade.setEstabelecimentosSaude(Double.parseDouble(cidadeInfo.get("estabelecimentos_saude").replaceAll("[^0-9.,]", "").replace(',', '.')));
                 cidade.setAreaUrbanizada(Double.parseDouble(cidadeInfo.get("area_urbanizada").replaceAll("[^0-9.,]", "").replace(',', '.')));
@@ -74,8 +74,10 @@ public class CidadeController {
                 // Adicionar a cidade à lista
                 cidades.add(cidade);
             }
+
             for (Cidade cidade : cidades) {
-                System.out.println(cidade.getNome());
+                System.out.println(cidade);
+                System.out.println();
             }
 
         } catch (IOException e) {
