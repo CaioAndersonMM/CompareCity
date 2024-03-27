@@ -1,4 +1,4 @@
-package br.edu.ufersa.compare_city.cidade;
+package br.edu.ufersa.compare_city.Cidade;
 
 import java.util.ArrayList;
 
