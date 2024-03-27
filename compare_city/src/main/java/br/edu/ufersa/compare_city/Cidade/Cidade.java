@@ -1,49 +1,106 @@
-package br.edu.ufersa.compare_city.cidade;
+package br.edu.ufersa.compare_city.Cidade;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Cidade {
     /* informações principais */
+     @JsonProperty("nome")
     private String nome;
+    
+    @JsonProperty("uf")
     private String uf;
 
     /* informações POPULAÇÃO */
+    @JsonProperty("populacao")
     private int populacao;
+    
+    @JsonProperty("densidade_demografica")
     private int densidadeDemografica;
 
     /* informações TRABALHO E RENDIMENTO */
+    @JsonProperty("salario_medio")
     private double salarioMedio;
+    
+    @JsonProperty("pessoal_ocupado")
     private int pessoalOcupado;
+    
+    @JsonProperty("populacao_ocupada")
     private double populacaoOcupada;
+    
+    @JsonProperty("percentual_rendimento_nominal_per_capita_de_ate_dois_tercos_salario_minimo")
     private double percentualRendimentoNominalPerCapta;
 
     /* informações EDUCAÇÃO */
+    @JsonProperty("taxa_escolarizacao")
     private double taxaEscolarizacao;
+    
+    @JsonProperty("ideb_inicio_fundamental")
     private double idebInicioFundamental;
+    
+    @JsonProperty("ideb_final_fundamental")
     private double idebFinalFundamental;
+    
+    @JsonProperty("matriculas_fundamental")
     private int matriculasFundamental;
+    
+    @JsonProperty("matriculas_medio")
     private int matriculasMedio;
+    
+    @JsonProperty("docentes_fundamental")
     private int docentesFundamental;
+    
+    @JsonProperty("docentes_medio")
     private int docentesMedio;
+    
+    @JsonProperty("estabelecimentos_ensino_fundamental")
     private int estabelecimentosFundamental;
+    
+    @JsonProperty("estabelecimentos_ensino_medio")
     private int estabelecimentosMedio;
 
     /* informações ECONOMIA */
+    @JsonProperty("pib_percapita")
     private double pibPerCapta;
+    
+    @JsonProperty("percentual_receitas_externas")
     private double percentualReceitasExternas;
+    
+    @JsonProperty("idh")
     private double idh;
+    
+    @JsonProperty("receitas_realizadas")
     private double receitasRealizadas;
+    
+    @JsonProperty("despesas_empenhadas")
     private double despesasEmpenhadas;
 
     /* informações SAÚDE */
+    @JsonProperty("mortalidade_infantil")
     private double mortalidadeInfantil;
+    
+    @JsonProperty("estabelecimentos_saude")
     private double estabelecimentosSaude;
 
     /* informações MEIO AMBIENTE */
+    @JsonProperty("area_urbanizada")
     private double areaUrbanizada;
+    
+    @JsonProperty("esgotamento_sanitario")
     private double esgotamentoSanitario;
+    
+    @JsonProperty("percentual_arborizacao")
     private double percentualArborizacao;
+    
+    @JsonProperty("percentual_urbanizacao_vias_publicas")
     private double percentualUrbanizacaoViasPublicas;
+    
+    @JsonProperty("populacao_exposta_risco")
     private int populacaoExpostaRisco;
+    
+    @JsonProperty("bioma")
     private String bioma;
+    
+    @JsonProperty("sistema_costeiro_marinho")
     private String sistemaCosteiroMarinho;
 
     /* Constructors */
@@ -340,5 +397,38 @@ public class Cidade {
 
     public void setSistemaCosteiroMarinho(String sistemaCosteiroMarinho) {
         this.sistemaCosteiroMarinho = sistemaCosteiroMarinho;
+    }
+    public String toString() {
+        return "Nome: " + nome +
+                "\nUF: " + uf +
+                "\nPopulação: " + populacao +
+                "\nDensidade Demográfica: " + densidadeDemografica +
+                "\nSalário Médio: " + salarioMedio +
+                "\nPessoal Ocupado: " + pessoalOcupado +
+                "\nPopulação Ocupada: " + populacaoOcupada +
+                "\nPercentual de Rendimento Nominal Per Capita: " + percentualRendimentoNominalPerCapta +
+                "\nTaxa de Escolarização: " + taxaEscolarizacao +
+                "\nIDEB Início Fundamental: " + idebInicioFundamental +
+                "\nIDEB Final Fundamental: " + idebFinalFundamental +
+                "\nMatrículas no Fundamental: " + matriculasFundamental +
+                "\nMatrículas no Médio: " + matriculasMedio +
+                "\nDocentes no Fundamental: " + docentesFundamental +
+                "\nDocentes no Médio: " + docentesMedio +
+                "\nEstabelecimentos de Ensino Fundamental: " + estabelecimentosFundamental +
+                "\nEstabelecimentos de Ensino Médio: " + estabelecimentosMedio +
+                "\nPIB Per Capita: " + pibPerCapta +
+                "\nPercentual de Receitas Externas: " + percentualReceitasExternas +
+                "\nIDH: " + idh +
+                "\nReceitas Realizadas: " + receitasRealizadas +
+                "\nDespesas Empenhadas: " + despesasEmpenhadas +
+                "\nMortalidade Infantil: " + mortalidadeInfantil +
+                "\nEstabelecimentos de Saúde: " + estabelecimentosSaude +
+                "\nÁrea Urbanizada: " + areaUrbanizada +
+                "\nEsgotamento Sanitário: " + esgotamentoSanitario +
+                "\nPercentual de Arborização: " + percentualArborizacao +
+                "\nPercentual de Urbanização de Vias Públicas: " + percentualUrbanizacaoViasPublicas +
+                "\nPopulação Exposta a Riscos: " + populacaoExpostaRisco +
+                "\nBioma: " + bioma +
+                "\nSistema Costeiro Marinho: " + sistemaCosteiroMarinho;
     }
 }
