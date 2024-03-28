@@ -3,6 +3,7 @@ package br.edu.ufersa.compare_city.cidade;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Repository;
@@ -21,9 +22,6 @@ public class CidadeRepository {
     public CidadeRepository(String cidadeUm, String ufUm, String cidadeDois, String ufDois) {
         buscarCidade(cidadeUm, ufUm, cidadeDois, ufDois);
     }
-
-    
-
 
     /** 
      * <p> Busca as cidades passadas como parâmetro no site do {@code IBGE Cidades} 
@@ -59,7 +57,7 @@ public class CidadeRepository {
      * e adiciona a lista de cidades buscadas
      * 
      */
-    public void extrairCidade() {
+    public List<Cidade> extrairCidade() {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -107,11 +105,13 @@ public class CidadeRepository {
                 listaCidades.add(cidade);
             }
             
-            
         } catch (IOException e) {
             e.getMessage();
             e.printStackTrace();
         }
+
+        return listaCidades;
+
     }
 
 
