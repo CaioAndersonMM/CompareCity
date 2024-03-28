@@ -1,32 +1,28 @@
-package br.edu.ufersa.compare_city.Cidade;
+package br.edu.ufersa.compare_city.cidade;
 
-import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Repository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Repository
 public class CidadeRepository {
 
-    private String nomeCidadeUm;
-    private String nomeCidadeDois;
-    private Cidade cidadeBuscadaUm;
-    private Cidade cidadeBuscadaDois;
     private static ArrayList<Cidade> listaCidades = new ArrayList<>();
 
     public CidadeRepository() {
 
     }
     
-    public CidadeRepository(String cidade, String uf) {
-        // buscarCidade(cidade, uf);
+    public CidadeRepository(String cidadeUm, String ufUm, String cidadeDois, String ufDois) {
+        buscarCidade(cidadeUm, ufUm, cidadeDois, ufDois);
     }
 
+    
 
 
     /** 
@@ -34,7 +30,7 @@ public class CidadeRepository {
      * e raspa os dados coletados para um arquivo Json 
      * 
      * <p> Após raspado, o dado será extraído quando chamado o método 
-     * {@link compare_city.src.main.java.br.edu.ufersa.compare_city.cidade.CidadeRepository#extrairCidade() extrairCidade()}
+     * {@link compare_city.src.main.java.br.edu.bufersa.compara_city.Cidade.CidadeRepository#extrairCidade() extrairCidade()}
      * 
      * @param cidadeUm - nome da primeira cidade a ser pesquisada
      * @param cidadeDois - nome da segunda cidade a ser pesquisada
@@ -43,8 +39,6 @@ public class CidadeRepository {
      * @see (IBGE Cidades) https://cidades.ibge.gov.br/ 
      **/
     public void buscarCidade(String cidadeUm, String ufUm, String cidadeDois, String ufDois) {
-        nomeCidadeUm = cidadeUm;
-        nomeCidadeDois = cidadeDois;
         try {
             ProcessBuilder procBuilder = new ProcessBuilder("python", 
                                                             System.getProperty("user.dir")+"/index.py", 
@@ -66,54 +60,60 @@ public class CidadeRepository {
      * 
      */
     public void extrairCidade() {
-        Cidade[] cidadesBuscadas = {cidadeBuscadaUm, cidadeBuscadaDois};
-        String[] nomeDasCidades = {nomeCidadeUm, nomeCidadeDois};
+        ObjectMapper objectMapper = new ObjectMapper();
+
         try {
-            JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(System.getProperty("user.dir")+"/index.py"));
-            JSONObject cidade = (JSONObject) jsonObject.get(nomeDasCidades[0]);
-            cidadesBuscadas[0].setNome(nomeDasCidades[0]);
-            cidadesBuscadas[0].setUf((String) cidade.get("uf"));
-            cidade.get("populacao");
-            cidade.get("densidade_demografica");
-            cidade.get("salario_medio");
-            cidade.get("pessoal_ocupado");
-            cidade.get("populacao_ocupada");
-            cidade.get("percentual_rendimento_nominal_per_capita_de_ate_dois_tercos_salario_minimo");
-            cidade.get("taxa_escolarizacao");
-            cidade.get("ideb_inicio_fundamental");
-            cidade.get("ideb_final_fundamental");
-            cidade.get("matriculas_fundamental");
-            cidade.get("matriculas_medio");
-            cidade.get("docentes_fundamental");
-            cidade.get("docentes_medio");
-            cidade.get("estabelecimentos_ensino_fundamental");
-            cidade.get("estabelecimentos_ensino_medio");
-            cidade.get("pib_percapita");
-            cidade.get("percentual_receitas_externas");
-            cidade.get("idh");
-            cidade.get("receitas_realizadas");
-            cidade.get("despesas_empenhadas");
-            cidade.get("mortalidade_infantil");
-            cidade.get("internacoes_diarreia");
-            cidade.get("estabelecimentos_saude");
-            cidade.get("area_urbanizada");
-            cidade.get("esgotamento_sanitario");
-            cidade.get("percentual_arborizacao");
-            cidade.get("percentual_urbanizacao_vias_publicas");
-            cidade.get("populacao_exposta_risco");
-            cidade.get("bioma");
-            cidade.get("sistema_costeiro_marinho");
+            @SuppressWarnings("unchecked")
+            Map<String, Map<String, String>> map = objectMapper.readValue(new File("dados.json"),Map.class);
+
+            for (Map.Entry<String, Map<String, String>> entry : map.entrySet()) {
+                String nome = entry.getKey();
+                Map<String, String> cidadeInfo = entry.getValue();
+
+                Cidade cidade = new Cidade();
+
+                cidade.setNome(nome);
+                cidade.setUf(cidadeInfo.get("uf"));
+                cidade.setPopulacao(Integer.parseInt(cidadeInfo.get("populacao").replaceAll("[^0-9]", "")));
+                cidade.setDensidadeDemografica(Integer.parseInt(cidadeInfo.get("densidade_demografica").replaceAll("[^0-9]", "")));
+                cidade.setSalarioMedio(Double.parseDouble(cidadeInfo.get("salario_medio").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setPessoalOcupado(Integer.parseInt(cidadeInfo.get("pessoal_ocupado").replaceAll("[^0-9]", "")));
+                cidade.setPopulacaoOcupada(Double.parseDouble(cidadeInfo.get("populacao_ocupada").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setPercentualRendimentoNominalPerCapta(Double.parseDouble(cidadeInfo.get("percentual_rendimento_nominal_per_capita_de_ate_dois_tercos_salario_minimo").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setTaxaEscolarizacao(Double.parseDouble(cidadeInfo.get("taxa_escolarizacao").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setIdebInicioFundamental(Double.parseDouble(cidadeInfo.get("ideb_inicio_fundamental").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setIdebFinalFundamental(Double.parseDouble(cidadeInfo.get("ideb_final_fundamental").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setMatriculasFundamental(Integer.parseInt(cidadeInfo.get("matriculas_fundamental").replaceAll("[^0-9]", "")));
+                cidade.setMatriculasMedio(Integer.parseInt(cidadeInfo.get("matriculas_medio").replaceAll("[^0-9]", "")));
+                cidade.setDocentesFundamental(Integer.parseInt(cidadeInfo.get("docentes_fundamental").replaceAll("[^0-9]", "")));
+                cidade.setDocentesMedio(Integer.parseInt(cidadeInfo.get("docentes_medio").replaceAll("[^0-9]", "")));
+                cidade.setEstabelecimentosFundamental(Integer.parseInt(cidadeInfo.get("estabelecimentos_ensino_fundamental").replaceAll("[^0-9]", "")));
+                cidade.setEstabelecimentosMedio(Integer.parseInt(cidadeInfo.get("estabelecimentos_ensino_medio").replaceAll("[^0-9]", "")));
+                cidade.setPibPerCapta(Double.parseDouble(cidadeInfo.get("pib_percapita").replaceAll("[^0-9.,]", "").split(",")[0].replaceAll(",", "").trim()));
+                cidade.setPercentualReceitasExternas(Double.parseDouble(cidadeInfo.get("percentual_receitas_externas").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setIdh(Double.parseDouble(cidadeInfo.get("idh").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setReceitasRealizadas(Double.parseDouble(cidadeInfo.get("receitas_realizadas").replaceAll("[^0-9.,]", "").split(",")[0].replaceAll(",", "").trim()));
+                cidade.setDespesasEmpenhadas(Double.parseDouble(cidadeInfo.get("despesas_empenhadas").replaceAll("[^0-9.,]", "").split(",")[0].replaceAll(",", "").trim()));
+                cidade.setMortalidadeInfantil(Double.parseDouble(cidadeInfo.get("mortalidade_infantil").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setEstabelecimentosSaude(Double.parseDouble(cidadeInfo.get("estabelecimentos_saude").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setAreaUrbanizada(Double.parseDouble(cidadeInfo.get("area_urbanizada").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setEsgotamentoSanitario(Double.parseDouble(cidadeInfo.get("esgotamento_sanitario").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setPercentualArborizacao(Double.parseDouble(cidadeInfo.get("percentual_arborizacao").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setPercentualUrbanizacaoViasPublicas(Double.parseDouble(cidadeInfo.get("percentual_urbanizacao_vias_publicas").replaceAll("[^0-9.,]", "").replace(',', '.')));
+                cidade.setPopulacaoExpostaRisco(Integer.parseInt(cidadeInfo.get("populacao_exposta_risco").replaceAll("[^0-9]", "")));
+                cidade.setBioma(cidadeInfo.get("bioma"));
+                cidade.setSistemaCosteiroMarinho(cidadeInfo.get("sistema_costeiro_marinho"));
+
+                listaCidades.add(cidade);
+            }
             
-        } catch (IOException | ParseException e) {
+            
+        } catch (IOException e) {
             e.getMessage();
             e.printStackTrace();
         }
     }
 
-    public Cidade getCidade() {
-        return cidadeBuscadaDois;
-    }
 
     public ArrayList<Cidade> getListaCidades() {
         return listaCidades;
