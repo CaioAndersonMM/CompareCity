@@ -45,7 +45,7 @@ mapeamento_campos = {
     "Sistema Costeiro-Marinho": "sistema_costeiro_marinho"
 }
 
-def coletarDados(cidade, estado):
+def coletarDados(estado, cidade):
 
     driver.get(f"https://cidades.ibge.gov.br/brasil/{estado}/{cidade}/panorama")
 
@@ -85,14 +85,14 @@ def coletarDados(cidade, estado):
     
     dataJson = {cidade: data}
     
-    with open("dados.json", "r") as file:
-        existing_data = json.load(file)
-        existing_data.update(dataJson)  # Atualizar os dados existentes com os novos
-        dataJson = existing_data
+    try:
+        with open("dados.json", "r") as file:
+            existing_data = json.load(file)
+    except json.decoder.JSONDecodeError: #Caso o arquivo esteja vazio!
+        existing_data = {}
     
     with open("dados.json", "w") as file:
         json.dump(dataJson, file, indent=4)  # Indentação para melhor legibilidade
-
 
 def clicar_proximo_cabecalho(indice):
     try:
