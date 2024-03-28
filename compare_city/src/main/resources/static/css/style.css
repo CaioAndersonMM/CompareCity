@@ -1,21 +1,37 @@
-body {
-    font-family: Arial, sans-serif;
+body, html {
+    height: 100%;
     margin: 0;
-    padding: 0;
+    font-family: Arial, sans-serif;
 }
 
 .container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.836); /* cor branca com 70% de opacidade */
+    padding: 40px;
+    border-radius: 10px;
 }
+
+.background-image {
+    background-image: url('citywallpaper.jpg');
+    background-size: cover;
+    background-position: center;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
 
 h1 {
     text-align: center;
 }
 
 .city-inputs {
-    margin-bottom: 20px;
+    text-align: center;
 }
 
 .city-inputs input {
