@@ -9,33 +9,38 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>Quais Cidades Você irá Comparar?</h1>
-        <div class="city-inputs">
-            <select id="state1" onchange="populateCities('city1', this.value)">
-                <option value="">Selecione um estado</option>
-            </select>
-            
-            <select id="city1" onchange="compareCities()">
-                <option value="">Selecionar Cidade</option>
-            </select>
+    <div class="background-image">
+        <div class="container">
+            <h1>Quais Cidades Você irá Comparar?</h1>
+            <div class="city-inputs">
+                <select id="state1" onchange="populateCities('city1', this.value)">
+                    <option value="">Selecione um estado</option>
+                </select>
+                
+                <select id="city1" onchange="compareCities()">
+                    <option value="">Selecionar Cidade</option>
+                </select>
 
-            <select id="state2" onchange="populateCities('city2', this.value)">
-                <option value="">Selecione um estado</option>
-            </select>
+                <br>
 
-            <select id="city2" onchange="compareCities()">
-                <option value="">Selecionar Cidade</option>
-            </select>
+                <select id="state2" onchange="populateCities('city2', this.value)">
+                    <option value="">Selecione um estado</option>
+                </select>
 
-            <br>
+                <select id="city2" onchange="compareCities()">
+                    <option value="">Selecionar Cidade</option>
+                </select>
 
-            <button onclick="window.location.href='/cidades/comparar'">Comparar</button>
+                <br><br>
 
-            <button onclick="enviarParametros()">Comparar Parametros</button>
-            
+                <button onclick="window.location.href='/cidades/comparar'">Comparar</button>
+
+                <button onclick="enviarParametros()">Comparar Parametros</button>
+                
+            </div>
         </div>
     </div>
+</body>
 
     <script>
         const selectState1 = document.querySelector('#state1');
@@ -94,6 +99,5 @@
 
         populateStateSelect();
     </script>
-</body>
 
 </html>
