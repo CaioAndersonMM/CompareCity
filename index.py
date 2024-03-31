@@ -90,9 +90,12 @@ def coletarDados(estado, cidade):
             existing_data = json.load(file)
     except json.decoder.JSONDecodeError: #Caso o arquivo esteja vazio!
         existing_data = {}
+
+    existing_data.update(dataJson)
+
     
     with open("dados.json", "w") as file:
-        json.dump(dataJson, file, indent=4)  # Indentação para melhor legibilidade
+        json.dump(existing_data, file, indent=4)  # Indentação para melhor legibilidade
 
 def clicar_proximo_cabecalho(indice):
     try:
