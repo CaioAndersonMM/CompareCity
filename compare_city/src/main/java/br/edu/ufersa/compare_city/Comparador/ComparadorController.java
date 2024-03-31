@@ -9,36 +9,16 @@ import java.net.URL;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
-
-import br.edu.ufersa.compare_city.cidade.Cidade;
-import br.edu.ufersa.compare_city.cidade.CidadeRepository;
 
 @Controller
 public class ComparadorController {
-
-    private final RestTemplate restTemplate;
-    private final CidadeRepository cidadeRepository;
-
-    @Autowired
-    public ComparadorController(CidadeRepository cidadeRepository, RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-        this.cidadeRepository = cidadeRepository;
-    }
-
-
-
+    
     @GetMapping("/cidades/comparar")
-    @ResponseBody
     public String home(@RequestParam(name = "estado1") String estado1,
             @RequestParam(name = "cidade1") String cidade1,
             @RequestParam(name = "estado2") String estado2,
@@ -89,23 +69,11 @@ public class ComparadorController {
                 return "Erro ao executar script Python: " + errorOutput.toString();
             }
 
-            List<Cidade> listaCidades = cidadeRepository.extrairCidade();
-            enviarCidadesRotas(listaCidades);
-
-            return "pagina_de_sucesso"; // Página de sucesso personalizada
+            return "redirect:/cidades/comparacao";
             
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return "Erro ao executar script Python: " + e.getMessage();
         }
-    }
-
-    private void enviarCidadesRotas(List<Cidade> listaCidades) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<List<Cidade>> requestEntity = new HttpEntity<>(listaCidades, headers);
-        String compararCidadesUrl = "http://localhost:8080/cidades/comparacao"; // Substitua pela URL correta da rota compararCidades
-        restTemplate.postForObject(compararCidadesUrl, requestEntity, String.class);
     }
 }
