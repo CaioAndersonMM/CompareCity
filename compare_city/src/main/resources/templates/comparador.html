@@ -6,9 +6,9 @@
     <title>Comparador de Cidades</title>
 
     <style>
-        body {
+          body {
             font-family: Arial, sans-serif;
-            background-color: #000000;
+            background-color: #f2f2f2; 
             margin: 0;
             padding: 0;
         }
@@ -16,14 +16,14 @@
         h1 {
             text-align: center;
             margin-top: 20px;
-            color: #ffffff;
+            color: #333;
         }
 
         table {
-            width: 80%;
+            width: 100%;
             margin: 20px auto;
             border-collapse: collapse;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd; 
             background-color: #fff;
         }
 
@@ -35,6 +35,7 @@
 
         th {
             background-color: #f2f2f2;
+            color: #333; /* Alterei a cor do texto do cabeçalho */
         }
 
         tr:nth-child(even) {
@@ -44,6 +45,8 @@
         tr:hover {
             background-color: #f2f2f2;
         }
+        
+        
     </style>
     
 </head>
@@ -52,18 +55,76 @@
 
     <table>
         <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Estado</th>
-                <th>População</th>
-            </tr>
+            <th>Nome</th>
+            <th>UF</th>
+            <th>População</th>
+            <th>Densidade Demográfica</th>
+            <th>Salário Médio</th>
+            <th>Pessoal Ocupado</th>
+            <th>População Ocupada</th>
+            <th>Percentual de Rendimento Nominal Per Capita</th>
+            <th>Taxa de Escolarização</th>
+            <th>IDEB Início Fundamental</th>
+            <th>IDEB Final Fundamental</th>
+            <th>Matrículas no Fundamental</th>
+            <th>Matrículas no Médio</th>
+            <th>Docentes no Fundamental</th>
+            <th>Docentes no Médio</th>
+            <th>Estabelecimentos de Ensino Fundamental</th>
+            <th>Estabelecimentos de Ensino Médio</th>
+            <th>PIB Per Capita</th>
+            <th>Percentual de Receitas Externas</th>
+            <th>IDH</th>
+            <th>Receitas Realizadas</th>
+            <th>Despesas Empenhadas</th>
+            <th>Mortalidade Infantil</th>
+            <th>Internações por Diarreia</th>
+            <th>Estabelecimentos de Saúde</th>
+            <th>Área Urbanizada</th>
+            <th>Esgotamento Sanitário</th>
+            <th>Percentual de Arborização</th>
+            <th>Percentual de Urbanização de Vias Públicas</th>
+            <th>População Exposta a Riscos</th>
+            <th>Bioma</th>
+            <th>Sistema Costeiro Marinho</th>
+        </tr>
         </thead>
         <tbody>
             <!-- Iteração sobre a lista de cidades para exibição -->
-            <tr th:each="cidade : ${cidades}">
+            <tr th:each="cidade, iterStat : ${cidades}" th:if="${iterStat.index < 2}">
                 <td th:text="${cidade.nome}">Nome da Cidade</td>
                 <td th:text="${cidade.uf}">Estado</td>
                 <td th:text="${cidade.populacao}">População</td>
+                <td th:text="${cidade.densidadeDemografica}">Densidade Demográfica</td>
+                <td th:text="${cidade.salarioMedio}">Salário Médio</td>
+                <td th:text="${cidade.pessoalOcupado}">Pessoal Ocupado</td>
+                <td th:text="${cidade.populacaoOcupada}">População Ocupada</td>
+                <td th:text="${cidade.percentualRendimentoNominalPerCapta}">Percentual de Rendimento Nominal Per Capita</td>
+                <td th:text="${cidade.taxaEscolarizacao}">Taxa de Escolarização</td>
+                <td th:text="${cidade.idebInicioFundamental}">IDEB Início Fundamental</td>
+                <td th:text="${cidade.idebFinalFundamental}">IDEB Final Fundamental</td>
+                <td th:text="${cidade.matriculasFundamental}">Matrículas no Fundamental</td>
+                <td th:text="${cidade.matriculasMedio}">Matrículas no Médio</td>
+                <td th:text="${cidade.docentesFundamental}">Docentes no Fundamental</td>
+                <td th:text="${cidade.docentesMedio}">Docentes no Médio</td>
+                <td th:text="${cidade.estabelecimentosFundamental}">Estabelecimentos de Ensino Fundamental</td>
+                <td th:text="${cidade.estabelecimentosMedio}">Estabelecimentos de Ensino Médio</td>
+                <td th:text="${cidade.pibPerCapta}">PIB Per Capita</td>
+                <td th:text="${cidade.percentualReceitasExternas}">Percentual de Receitas Externas</td>
+                <td th:text="${cidade.idh}">IDH</td>
+                <td th:text="${cidade.receitasRealizadas}">Receitas Realizadas</td>
+                <td th:text="${cidade.despesasEmpenhadas}">Despesas Empenhadas</td>
+                <td th:text="${cidade.mortalidadeInfantil}">Mortalidade Infantil</td>
+                <td th:text="${cidade.estabelecimentosSaude}">Estabelecimentos de Saúde</td>
+                <td th:text="${cidade.areaUrbanizada}">Área Urbanizada</td>
+                <td th:text="${cidade.esgotamentoSanitario}">Esgotamento Sanitário</td>
+                <td th:text="${cidade.percentualArborizacao}">Percentual de Arborização</td>
+                <td th:text="${cidade.percentualUrbanizacaoViasPublicas}">Percentual de Urbanização de Vias Públicas</td>
+                <td th:text="${cidade.populacaoExpostaRisco}">População Exposta a Riscos</td>
+                <td th:text="${cidade.bioma}">Bioma</td>
+                <td th:text="${cidade.sistemaCosteiroMarinho}">Sistema Costeiro Marinho</td>
+              
+
             </tr>
         </tbody>
     </table>
