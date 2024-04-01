@@ -85,16 +85,21 @@
 
 
         function enviarParametros() {
-            const estado1 = document.getElementById("state1").value;
-            const cidade1 = document.getElementById("city1").options[document.getElementById("city1").selectedIndex].textContent;
-            const estado2 = document.getElementById("state2").value;
-            const cidade2 = document.getElementById("city2").options[document.getElementById("city2").selectedIndex].textContent;
+            const estado1 = removerAcentosECedilha(document.getElementById("state1").value.toLowerCase());
+            const cidade1 = removerAcentosECedilha(document.getElementById("city1").options[document.getElementById("city1").selectedIndex].textContent.toLowerCase().replace(/\s+/g, '-'));
+            const estado2 = removerAcentosECedilha(document.getElementById("state2").value.toLowerCase());
+            const cidade2 = removerAcentosECedilha(document.getElementById("city2").options[document.getElementById("city2").selectedIndex].textContent.toLowerCase().replace(/\s+/g, '-'));
 
             // Construir a URL com os parâmetros
             const url = `/cidades/comparar?estado1=${estado1}&cidade1=${cidade1}&estado2=${estado2}&cidade2=${cidade2}`;
 
             // Redirecionar para a URL
             window.location.href = url;
+        }
+
+
+        function removerAcentosECedilha(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ç/g, "c");
         }
 
         populateStateSelect();
