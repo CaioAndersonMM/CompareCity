@@ -1,5 +1,7 @@
 package br.edu.ufersa.compare_city.cidade;
 
+import java.util.LinkedList;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Cidade {
@@ -103,6 +105,9 @@ public class Cidade {
     @JsonProperty("sistema_costeiro_marinho")
     private String sistemaCosteiroMarinho;
 
+    private LinkedList<Double> dadosEconomia = new LinkedList<>();
+
+
     /* Constructors */
     public Cidade() {
     }
@@ -148,6 +153,16 @@ public class Cidade {
         this.populacaoExpostaRisco = populacaoExpostaRisco;
         this.bioma = bioma;
         this.sistemaCosteiroMarinho = sistemaCosteiroMarinho;
+    }
+
+    public LinkedList<Double> getDadosEconomia() {
+        dadosEconomia.clear();
+        dadosEconomia.add(pibPerCapta);
+        dadosEconomia.add(percentualReceitasExternas);
+        dadosEconomia.add(idh);
+        dadosEconomia.add(receitasRealizadas);
+        dadosEconomia.add(despesasEmpenhadas);
+        return dadosEconomia;
     }
 
     /* Gets and Sets */
