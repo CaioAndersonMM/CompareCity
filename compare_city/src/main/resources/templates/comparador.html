@@ -192,6 +192,12 @@
         </tr>
     </table>
 
+    <ul>
+        <li th:each="data : ${historico}">
+            <span th:text="${data}"></span>
+        </li>
+    </ul>
+
     <script>
         window.onload = function () {
             var rows = document.querySelectorAll('tr');

@@ -1,15 +1,15 @@
 package br.edu.ufersa.compare_city;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Stack;
 import java.util.TreeMap;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import br.edu.ufersa.compare_city.cidade.Cidade;
 import br.edu.ufersa.compare_city.cidade.CidadeRepository;
@@ -60,11 +60,17 @@ public class HomePage {
             dadosBiomaESistemaCosteiro.put(cidade.getBioma(), cidade.getSistemaCosteiroMarinho());
 
         }
+
+        Stack<LocalDate> historico = cidadeRepository.lerPilha(); 
+
+
         model.addAttribute("cidades", listaCidades);
         model.addAttribute("dadosEconomicos", dadosEconomicosPorCidade);
         model.addAttribute("dadosPopulacionais", dadosPopulacionais);
         model.addAttribute("dadosMeioAmbiente", dadosMeioAmbientePorCidade);
         model.addAttribute("dadosBiomaESistemaCosteiro", dadosBiomaESistemaCosteiro);
+        model.addAttribute("historico", historico);
+
 
         return "comparador";
     }
