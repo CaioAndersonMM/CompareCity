@@ -3,17 +3,9 @@ package br.edu.ufersa.compare_city.comparador;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
 
 @Controller
 public class ComparadorController {
@@ -22,13 +14,8 @@ public class ComparadorController {
     public String home(@RequestParam(name = "estado1") String estado1,
             @RequestParam(name = "cidade1") String cidade1,
             @RequestParam(name = "estado2") String estado2,
-            @RequestParam(name = "cidade2") String cidade2, Model model) {
+            @RequestParam(name = "cidade2") String cidade2) {
         try {
-
-            String mensagem = "Sua mensagem aqui"; // Defina a mensagem que deseja exibir
-
-            // Adiciona a mensagem ao modelo para ser acessada pelo HTML
-            model.addAttribute("mensagem", mensagem);
 
             if (estado1.isEmpty() || estado2.isEmpty()) { //dados ficticios
                 estado1 = "rn";
@@ -37,7 +24,6 @@ public class ComparadorController {
                 cidade2 = "mossoro";
             }
 
-            model.addAttribute("mensagem", "Seus dados de estado e cidade estão sendo analisados!");
             // Executando o script Python
             String rootPath = System.getProperty("user.dir");
 
@@ -65,7 +51,6 @@ public class ComparadorController {
                 while ((errorLine = errorReader.readLine()) != null) {
                     errorOutput.append(errorLine).append("\n");
                 }
-                model.addAttribute("mensagem", "Erro ao executar script Python: " + errorOutput.toString());
                 return "Erro ao executar script Python: " + errorOutput.toString();
             }
 
