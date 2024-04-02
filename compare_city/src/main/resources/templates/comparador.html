@@ -7,7 +7,7 @@
     <title>Comparador de Cidades</title>
 
     <style>
-  body {
+        body {
             font-family: Arial, sans-serif;
             background-color: #f2f2f2;
             margin: 0;
@@ -54,7 +54,8 @@
         .highlight-green:hover {
             background-color: lightgreen !important;
         }
-        .highlight-red:hover{
+
+        .highlight-red:hover {
             background-color: lightcoral !important;
         }
     </style>
@@ -63,6 +64,11 @@
 
 <body>
     <h1>Comparação de Cidades</h1>
+
+    <label for="limitePopulacao">Quantidade Populacional:</label>
+    <input type="number" id="limitePopulacao" name="limitePopulacao" placeholder="Ex: 1000000">
+    <button onclick="destacarPopulacao()">Aplicar</button>
+
 
     <table>
 
@@ -169,29 +175,35 @@
 
     <table style="width:100%">
         <tr>
-          <th>População:</th>
-          <td>Esses dados podem vim de outros modelos</td>
-          <td>APROVEITAR E USAR VÁRIAS COLLECTIONS</td>
+            <th>População:</th>
+            <td th:each="populacao, iterStat : ${dadosPopulacionais}" th:text="${populacao}" th:if="${iterStat.index < 4}" class="populacao"></td>
+            
+            <td>APROVEITAR E USAR VÁRIAS COLLECTIONS</td>
         </tr>
         <tr>
             <th>Salário Médio:</th>
             <td>Esses dados podem vim de outros modelos</td>
             <td>APROVEITAR E USAR VÁRIAS COLLECTIONS</td>
-          </tr>
-      </table>
+        </tr>
+        <tr>
+            <th>OUTRO:</th>
+            <td>Esses dados podem vim de outros modelos</td>
+            <td>APROVEITAR E USAR VÁRIAS COLLECTIONS</td>
+        </tr>
+    </table>
 
     <script>
         window.onload = function () {
             var rows = document.querySelectorAll('tr');
-    
+
             // Itera sobre cada coluna das duas linhas
             var values1 = rows[0].querySelectorAll('td');
             var values2 = rows[1].querySelectorAll('td');
-    
+
             for (var i = 0; i < values1.length; i++) {
                 var value1 = (values1[i].textContent);
                 var value2 = (values2[i].textContent);
-    
+
                 if (!isNaN(value1) && !isNaN(value2)) {
                     if (value1 > value2) {
                         values1[i].classList.add('highlight-green');
@@ -203,6 +215,32 @@
                 }
             }
         }
+
+        function destacarPopulacao() {
+        var limitePopulacao = document.getElementById("limitePopulacao").value;
+
+        if (isNaN(limitePopulacao)) {
+            alert("Por favor, insira um número válido para o limite de população.");
+            return;
+        }
+
+        var populacaoElements = document.querySelectorAll('.populacao');
+
+        for (var i = 0; i < populacaoElements.length; i++) {
+            var populacaoElement = populacaoElements[i];
+            var populacao = parseInt(populacaoElement.textContent);
+
+            if (!isNaN(populacao)) {
+                if (populacao > limitePopulacao) {
+                    populacaoElement.style.backgroundColor = 'green';
+                    populacaoElement.style.color = 'white';
+                } else {
+                    populacaoElement.style.backgroundColor = 'red';
+                    populacaoElement.style.color = 'white';
+                }
+            }
+        }
+    }
     </script>
 
 </body>
