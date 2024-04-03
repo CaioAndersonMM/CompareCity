@@ -34,7 +34,7 @@ mapeamento_campos = {
     "Total de receitas realizadas": "receitas_realizadas",
     "Total de despesas empenhadas": "despesas_empenhadas",
     "Mortalidade Infantil": "mortalidade_infantil",
-    "Internações por diarreia": "internacoes_diarreia",
+    "Internações por diarreia pelo SUS": "internacoes_diarreia",
     "Estabelecimentos de Saúde SUS": "estabelecimentos_saude",
     "Área urbanizada": "area_urbanizada",
     "Esgotamento sanitário adequado": "esgotamento_sanitario",
