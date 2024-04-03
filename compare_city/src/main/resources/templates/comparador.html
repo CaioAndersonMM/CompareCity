@@ -222,7 +222,7 @@
     </div>
 
     <div class="container2">
-        <table style="width: 70%; background-color: #1816168c;">
+        <table style="width: 100%; background-color: #000000ad; font-size: 15px;">
             <tr>
                 <th style="background-color: rgb(46, 46, 46); color: white;">População:</th>
                 <td style="background-color: rgb(46, 46, 46); color: white;"
@@ -231,9 +231,9 @@
             </tr>
             <tr>
                 <th
-                    style="background-color: rgb(46, 46, 46); color: rgb(229, 255, 0); padding-left: 20px; padding-right: 20px;">
+                style="background-color: rgb(46, 46, 46); color: rgb(229, 255, 0); white-space: nowrap;">
                     Dados Econômicos:</th>
-                <td style="background-color: rgb(46, 46, 46); color: rgb(229, 255, 0);"
+                <td style="background-color: rgb(46, 46, 46); color: rgb(229, 255, 0); white-space: nowrap;"
                     th:each="economia, iterStat : ${dadosEconomicos}" th:text="${economia}" class="economia"></td>
             </tr>
 
@@ -246,7 +246,7 @@
                 <td style="background-color: darkgreen; color: white;">População Exposta ao Risco</td>
             </tr>
             <tr th:each="dados : ${dadosMeioAmbiente}">
-                <td style="background-color: darkgreen; color: white;"> </td> <!-- Espaço vazio -->
+                <td style="background-color: rgb(49, 49, 49); color: white;"> </td> <!-- Espaço vazio -->
                 <!-- Acessando os elementos do array -->
                 <td th:text="${dados[0]}" style="background-color: green; color: white;">-</td>
                 <td th:text="${dados[1]}" style="background-color: green; color: white;">-</td>
@@ -263,11 +263,11 @@
             </tr>
 
 
-            <tr>
+            <!-- <tr>
                 <th>OUTRO:</th>
                 <td>Esses dados podem vim de outros modelos</td>
                 <td>APROVEITAR E USAR VÁRIAS COLLECTIONS</td>
-            </tr>
+            </tr> -->
         </table>
     </div>
 
