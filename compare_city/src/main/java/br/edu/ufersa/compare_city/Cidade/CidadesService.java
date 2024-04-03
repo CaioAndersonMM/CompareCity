@@ -1,7 +1,7 @@
 package br.edu.ufersa.compare_city.cidade;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class CidadesService {
     }
 
 
-    public ArrayList<Cidade> getListaCidades() {
+    public List<Cidade> getListaCidades() {
         return cidadeRepository.getListaCidades();
     }
 
