@@ -12,6 +12,7 @@
             background-color: #f2f2f2;
             margin: 0;
             padding: 0;
+            background-image: url('/css/citywallpaper.jpg');
         }
 
         h1 {
@@ -58,145 +59,226 @@
         .highlight-red:hover {
             background-color: lightcoral !important;
         }
+
+        .container {
+            width: 100%;
+            /* Define a largura da div como 100% */
+            background-color: white;
+            /* Define a cor de fundo como branco */
+            overflow-x: auto;
+            /* Adiciona uma barra de rolagem horizontal caso a tabela seja maior que a largura da div */
+        }
+
+        h1, h2,
+        p1 {
+            background-color: #333;
+            color: white;
+        }
+
+        label{
+            color: white;
+        }
+
+        .centered-list {
+            text-align: center;
+        }
+
+        ul {
+            list-style-type: none;
+            /* Remove as marcas padrão da lista */
+            padding: 0;
+        }
+
+        li {
+            display: inline;
+            background-color: #333;
+            color: white;
+        }
+
+        /* Adiciona quebras de linha entre os itens da lista */
+        li:not(:last-child)::after {
+            content: "\a";
+            /* Caractere de quebra de linha */
+            white-space: pre;
+            /* Define que a quebra de linha é tratada como um caractere */
+        }
     </style>
 
 </head>
 
 <body>
+
     <h1>Comparação de Cidades</h1>
 
     <label for="limitePopulacao">Quantidade Populacional:</label>
     <input type="number" id="limitePopulacao" name="limitePopulacao" placeholder="Ex: 1000000">
     <button onclick="destacarPopulacao()">Aplicar</button>
 
+    <div class="container">
 
-    <table>
+        <table>
+            <tbody>
+                <!-- Iteração sobre a lista de cidades para exibição -->
+                <tr th:each="cidade, iterStat : ${cidades}">
+                    <th>Nome</th>
+                    <td th:text="${cidade.nome}">Nome da Cidade</td>
 
-        <tbody>
-            <!-- Iteração sobre a lista de cidades para exibição -->
-            <tr th:each="cidade, iterStat : ${cidades}">
-                <th>Nome</th>
-                <td th:text="${cidade.nome}">Nome da Cidade</td>
+                    <th>UF</th>
+                    <td th:text="${cidade.uf}">Estado</td>
 
-                <th>UF</th>
-                <td th:text="${cidade.uf}">Estado</td>
+                    <th>População</th>
+                    <td th:text="${cidade.populacao}">População</td>
 
-                <th>População</th>
-                <td th:text="${cidade.populacao}">População</td>
+                    <th>Densidade Demográfica</th>
+                    <td th:text="${cidade.densidadeDemografica}">Densidade Demográfica</td>
 
-                <th>Densidade Demográfica</th>
-                <td th:text="${cidade.densidadeDemografica}">Densidade Demográfica</td>
+                    <th>Salário Médio</th>
+                    <td th:text="${cidade.salarioMedio}">Salário Médio</td>
 
-                <th>Salário Médio</th>
-                <td th:text="${cidade.salarioMedio}">Salário Médio</td>
+                    <th>Pessoal Ocupado</th>
+                    <td th:text="${cidade.pessoalOcupado}">Pessoal Ocupado</td>
 
-                <th>Pessoal Ocupado</th>
-                <td th:text="${cidade.pessoalOcupado}">Pessoal Ocupado</td>
+                    <th>População Ocupada</th>
+                    <td th:text="${cidade.populacaoOcupada}">População Ocupada</td>
 
-                <th>População Ocupada</th>
-                <td th:text="${cidade.populacaoOcupada}">População Ocupada</td>
+                    <th>Percentual de Rendimento Nominal Per Capita</th>
+                    <td th:text="${cidade.percentualRendimentoNominalPerCapta}">Percentual de Rendimento Nominal Per
+                        Capita
+                    </td>
 
-                <th>Percentual de Rendimento Nominal Per Capita</th>
-                <td th:text="${cidade.percentualRendimentoNominalPerCapta}">Percentual de Rendimento Nominal Per Capita
-                </td>
+                    <th>Taxa de Escolarização</th>
+                    <td th:text="${cidade.taxaEscolarizacao}">Taxa de Escolarização</td>
 
-                <th>Taxa de Escolarização</th>
-                <td th:text="${cidade.taxaEscolarizacao}">Taxa de Escolarização</td>
+                    <th>IDEB Início Fundamental</th>
+                    <td th:text="${cidade.idebInicioFundamental}">IDEB Início Fundamental</td>
 
-                <th>IDEB Início Fundamental</th>
-                <td th:text="${cidade.idebInicioFundamental}">IDEB Início Fundamental</td>
+                    <th>IDEB Final Fundamental</th>
+                    <td th:text="${cidade.idebFinalFundamental}">IDEB Final Fundamental</td>
 
-                <th>IDEB Final Fundamental</th>
-                <td th:text="${cidade.idebFinalFundamental}">IDEB Final Fundamental</td>
+                    <th>Matrículas no Fundamental</th>
+                    <td th:text="${cidade.matriculasFundamental}">Matrículas no Fundamental</td>
 
-                <th>Matrículas no Fundamental</th>
-                <td th:text="${cidade.matriculasFundamental}">Matrículas no Fundamental</td>
+                    <th>Matrículas no Médio</th>
+                    <td th:text="${cidade.matriculasMedio}">Matrículas no Médio</td>
 
-                <th>Matrículas no Médio</th>
-                <td th:text="${cidade.matriculasMedio}">Matrículas no Médio</td>
+                    <th>Docentes no Fundamental</th>
+                    <td th:text="${cidade.docentesFundamental}">Docentes no Fundamental</td>
 
-                <th>Docentes no Fundamental</th>
-                <td th:text="${cidade.docentesFundamental}">Docentes no Fundamental</td>
+                    <th>Docentes no Médio</th>
+                    <td th:text="${cidade.docentesMedio}">Docentes no Médio</td>
 
-                <th>Docentes no Médio</th>
-                <td th:text="${cidade.docentesMedio}">Docentes no Médio</td>
+                    <th>Estabelecimentos de Ensino Fundamental</th>
+                    <td th:text="${cidade.estabelecimentosFundamental}">Estabelecimentos de Ensino Fundamental</td>
 
-                <th>Estabelecimentos de Ensino Fundamental</th>
-                <td th:text="${cidade.estabelecimentosFundamental}">Estabelecimentos de Ensino Fundamental</td>
+                    <th>Estabelecimentos de Ensino Médio</th>
+                    <td th:text="${cidade.estabelecimentosMedio}">Estabelecimentos de Ensino Médio</td>
 
-                <th>Estabelecimentos de Ensino Médio</th>
-                <td th:text="${cidade.estabelecimentosMedio}">Estabelecimentos de Ensino Médio</td>
+                    <th>PIB Per Capita</th>
+                    <td th:text="${cidade.pibPerCapta}">PIB Per Capita</td>
 
-                <th>PIB Per Capita</th>
-                <td th:text="${cidade.pibPerCapta}">PIB Per Capita</td>
+                    <th>Percentual de Receitas Externas</th>
+                    <td th:text="${cidade.percentualReceitasExternas}">Percentual de Receitas Externas</td>
 
-                <th>Percentual de Receitas Externas</th>
-                <td th:text="${cidade.percentualReceitasExternas}">Percentual de Receitas Externas</td>
+                    <th>IDH</th>
+                    <td th:text="${cidade.idh}">IDH</td>
 
-                <th>IDH</th>
-                <td th:text="${cidade.idh}">IDH</td>
+                    <th>Receitas Realizadas</th>
+                    <td th:text="${cidade.receitasRealizadas}">Receitas Realizadas</td>
 
-                <th>Receitas Realizadas</th>
-                <td th:text="${cidade.receitasRealizadas}">Receitas Realizadas</td>
+                    <th>Despesas Empenhadas</th>
+                    <td th:text="${cidade.despesasEmpenhadas}">Despesas Empenhadas</td>
 
-                <th>Despesas Empenhadas</th>
-                <td th:text="${cidade.despesasEmpenhadas}">Despesas Empenhadas</td>
+                    <th>Mortalidade Infantil</th>
+                    <td th:text="${cidade.mortalidadeInfantil}">Mortalidade Infantil</td>
 
-                <th>Mortalidade Infantil</th>
-                <td th:text="${cidade.mortalidadeInfantil}">Mortalidade Infantil</td>
+                    <th>Internações por Diarreia</th>
+                    <td th:text="${cidade.estabelecimentosSaude}">Estabelecimentos de Saúde</td>
 
-                <th>Internações por Diarreia</th>
-                <td th:text="${cidade.estabelecimentosSaude}">Estabelecimentos de Saúde</td>
+                    <th>Área Urbanizada</th>
+                    <td th:text="${cidade.areaUrbanizada}">Área Urbanizada</td>
 
-                <th>Área Urbanizada</th>
-                <td th:text="${cidade.areaUrbanizada}">Área Urbanizada</td>
+                    <th>Esgotamento Sanitário</th>
+                    <td th:text="${cidade.esgotamentoSanitario}">Esgotamento Sanitário</td>
 
-                <th>Esgotamento Sanitário</th>
-                <td th:text="${cidade.esgotamentoSanitario}">Esgotamento Sanitário</td>
+                    <th>Percentual de Arborização</th>
+                    <td th:text="${cidade.percentualArborizacao}">Percentual de Arborização</td>
 
-                <th>Percentual de Arborização</th>
-                <td th:text="${cidade.percentualArborizacao}">Percentual de Arborização</td>
+                    <th>Percentual de Urbanização de Vias Públicas</th>
+                    <td th:text="${cidade.percentualUrbanizacaoViasPublicas}">Percentual de Urbanização de Vias Públicas
+                    </td>
 
-                <th>Percentual de Urbanização de Vias Públicas</th>
-                <td th:text="${cidade.percentualUrbanizacaoViasPublicas}">Percentual de Urbanização de Vias Públicas
-                </td>
+                    <th>População Exposta a Riscos</th>
+                    <td th:text="${cidade.populacaoExpostaRisco}">População Exposta a Riscos</td>
 
-                <th>População Exposta a Riscos</th>
-                <td th:text="${cidade.populacaoExpostaRisco}">População Exposta a Riscos</td>
+                    <th>Bioma</th>
+                    <td th:text="${cidade.bioma}">Bioma</td>
 
-                <th>Bioma</th>
-                <td th:text="${cidade.bioma}">Bioma</td>
+                    <th>Sistema Costeiro Marinho</th>
+                    <td th:text="${cidade.sistemaCosteiroMarinho}">Sistema Costeiro Marinho</td>
+                </tr>
+            </tbody>
+        </table>
 
-                <th>Sistema Costeiro Marinho</th>
-                <td th:text="${cidade.sistemaCosteiroMarinho}">Sistema Costeiro Marinho</td>
+    </div>
+
+    <div class="container2">
+        <table style="width: 70%; background-color: #1816168c;">
+            <tr>
+                <th style="background-color: rgb(46, 46, 46); color: white;">População:</th>
+                <td style="background-color: rgb(46, 46, 46); color: white;"
+                    th:each="populacao, iterStat : ${dadosPopulacionais}" th:text="${populacao}" class="populacao"></td>
+
             </tr>
-        </tbody>
-    </table>
+            <tr>
+                <th
+                    style="background-color: rgb(46, 46, 46); color: rgb(229, 255, 0); padding-left: 20px; padding-right: 20px;">
+                    Dados Econômicos:</th>
+                <td style="background-color: rgb(46, 46, 46); color: rgb(229, 255, 0);"
+                    th:each="economia, iterStat : ${dadosEconomicos}" th:text="${economia}" class="economia"></td>
+            </tr>
 
-    <table style="width:100%">
-        <tr>
-            <th>População:</th>
-            <td th:each="populacao, iterStat : ${dadosPopulacionais}" th:text="${populacao}" th:if="${iterStat.index < 4}" class="populacao"></td>
-            
-            <td>APROVEITAR E USAR VÁRIAS COLLECTIONS</td>
-        </tr>
-        <tr>
-            <th>Salário Médio:</th>
-            <td>Esses dados podem vim de outros modelos</td>
-            <td>APROVEITAR E USAR VÁRIAS COLLECTIONS</td>
-        </tr>
-        <tr>
-            <th>OUTRO:</th>
-            <td>Esses dados podem vim de outros modelos</td>
-            <td>APROVEITAR E USAR VÁRIAS COLLECTIONS</td>
-        </tr>
-    </table>
+            <tr>
+                <th style="background-color: darkgreen; color: white;">Meio Ambiente</th>
+                <td style="background-color: darkgreen; color: white;">Área Urbanizada</td>
+                <td style="background-color: darkgreen; color: white;">Esgotamento Sanitário</td>
+                <td style="background-color: darkgreen; color: white;">Percentual de Arborização</td>
+                <td style="background-color: darkgreen; color: white;">Percentual de Urbanização de Vias Públicas</td>
+                <td style="background-color: darkgreen; color: white;">População Exposta ao Risco</td>
+            </tr>
+            <tr th:each="dados : ${dadosMeioAmbiente}">
+                <td style="background-color: darkgreen; color: white;"> </td> <!-- Espaço vazio -->
+                <!-- Acessando os elementos do array -->
+                <td th:text="${dados[0]}" style="background-color: green; color: white;">-</td>
+                <td th:text="${dados[1]}" style="background-color: green; color: white;">-</td>
+                <td th:text="${dados[2]}" style="background-color: green; color: white;">-</td>
+                <td th:text="${dados[3]}" style="background-color: green; color: white;">-</td>
+                <td th:text="${dados[4]}" style="background-color: green; color: white;">-</td>
+            </tr>
+            <tr>
+            <tr th:each="entry : ${dadosBiomaESistemaCosteiro.entrySet()}">
+                <th style="background-color: rgb(46, 46, 46); color: white;">Bioma</th>
+                <td style="background-color: rgb(46, 46, 46); color: white;" th:text="${entry.key}">-</td>
+                <td style="background-color: rgb(46, 46, 46); color: white;" th:text="${entry.value}">-</td>
+            </tr>
+            </tr>
 
-    <ul>
-        <li th:each="data : ${historico}">
-            <span th:text="${data}"></span>
-        </li>
-    </ul>
+
+            <tr>
+                <th>OUTRO:</th>
+                <td>Esses dados podem vim de outros modelos</td>
+                <td>APROVEITAR E USAR VÁRIAS COLLECTIONS</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="centered-list">
+        <h2>Histórico de acesso</h2>
+        <ul>
+            <li th:each="data : ${historico}">
+                <span th:text="${data}"></span>
+            </li>
+        </ul>
+    </div>
 
     <script>
         window.onload = function () {
@@ -223,32 +305,31 @@
         }
 
         function destacarPopulacao() {
-        var limitePopulacao = document.getElementById("limitePopulacao").value;
+            var limitePopulacao = document.getElementById("limitePopulacao").value;
 
-        if (isNaN(limitePopulacao)) {
-            alert("Por favor, insira um número válido para o limite de população.");
-            return;
-        }
+            if (isNaN(limitePopulacao)) {
+                alert("Por favor, insira um número válido para o limite de população.");
+                return;
+            }
 
-        var populacaoElements = document.querySelectorAll('.populacao');
+            var populacaoElements = document.querySelectorAll('.populacao');
 
-        for (var i = 0; i < populacaoElements.length; i++) {
-            var populacaoElement = populacaoElements[i];
-            var populacao = parseInt(populacaoElement.textContent);
+            for (var i = 0; i < populacaoElements.length; i++) {
+                var populacaoElement = populacaoElements[i];
+                var populacao = parseInt(populacaoElement.textContent);
 
-            if (!isNaN(populacao)) {
-                if (populacao > limitePopulacao) {
-                    populacaoElement.style.backgroundColor = 'green';
-                    populacaoElement.style.color = 'white';
-                } else {
-                    populacaoElement.style.backgroundColor = 'red';
-                    populacaoElement.style.color = 'white';
+                if (!isNaN(populacao)) {
+                    if (populacao > limitePopulacao) {
+                        populacaoElement.style.border = '7px solid blue';
+                        populacaoElement.style.color = 'white';
+                    } else {
+                        populacaoElement.style.border = '5px dashed red';
+                        populacaoElement.style.color = 'red';
+                    }
                 }
             }
         }
-    }
     </script>
-
 </body>
 
 </html>
