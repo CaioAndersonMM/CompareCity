@@ -12,14 +12,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import br.edu.ufersa.compare_city.cidade.Cidade;
-import br.edu.ufersa.compare_city.cidade.CidadeRepository;
+import br.edu.ufersa.compare_city.cidade.CidadeController;
 
 import org.springframework.ui.Model;
 
 @Controller
 public class HomePage {
 
-    private final CidadeRepository cidadeRepository = new CidadeRepository();
+    private final CidadeController cidadeController = new CidadeController();
 
     @GetMapping("/")
     public String home() {
@@ -28,7 +28,8 @@ public class HomePage {
 
     @GetMapping("/cidades/comparacao")
     public String compararCidades(Model model) {
-        List<Cidade> listaCidades = cidadeRepository.extrairCidade();
+        List<Cidade> listaCidades = cidadeController.getListaCidades();
+        Stack<LocalDate> historico = cidadeController.getHistorico();
         System.out.println(listaCidades);
 
         LinkedList<LinkedList<Double>> dadosEconomicosPorCidade = new LinkedList<>();
@@ -58,10 +59,7 @@ public class HomePage {
 
             dadosMeioAmbientePorCidade.add(dadosMeioAmbiente);
             dadosBiomaESistemaCosteiro.put(cidade.getBioma(), cidade.getSistemaCosteiroMarinho());
-
         }
-
-        Stack<LocalDate> historico = cidadeRepository.lerPilha(); 
 
 
         model.addAttribute("cidades", listaCidades);

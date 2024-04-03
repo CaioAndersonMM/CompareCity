@@ -1,5 +1,7 @@
 package br.edu.ufersa.compare_city.comparador;
 
+import java.util.List;
+
 import br.edu.ufersa.compare_city.cidade.Cidade;
 
 public class Comparador {
@@ -10,9 +12,8 @@ public class Comparador {
     public Comparador() {
     }
 
-    public Comparador(Cidade cidadeUm, Cidade cidadeDois) {
-        this.cidadeUm = cidadeUm;
-        this.cidadeDois = cidadeDois;
+    public Comparador(List<Cidade> listaCidade) {
+        
     }
 
     public Cidade getCidadeUm() {

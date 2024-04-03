@@ -74,7 +74,7 @@
 
         <tbody>
             <!-- Iteração sobre a lista de cidades para exibição -->
-            <tr th:each="cidade, iterStat : ${cidades}" th:if="${iterStat.index < 2}">
+            <tr th:each="cidade, iterStat : ${cidades}">
                 <th>Nome</th>
                 <td th:text="${cidade.nome}">Nome da Cidade</td>
 
