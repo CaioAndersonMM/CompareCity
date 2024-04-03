@@ -5,6 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+import sys
+
+
 driver = webdriver.Chrome()
 
 #BRUNO SUGERIU FAZER UM SISTEMA DE CONSULTA EM BATCH ai usaria LISTA encadeada!
@@ -42,7 +45,7 @@ mapeamento_campos = {
     "Sistema Costeiro-Marinho": "sistema_costeiro_marinho"
 }
 
-def coletarDados(cidade, estado):
+def coletarDados(estado, cidade):
 
     driver.get(f"https://cidades.ibge.gov.br/brasil/{estado}/{cidade}/panorama")
 
@@ -72,8 +75,8 @@ def coletarDados(cidade, estado):
                     
                 textos_celulas.append(celula.text)
 
-        texto_completo = "\n".join(textos_celulas)
-        print(texto_completo.encode('utf-8').decode('utf-8'))
+        #texto_completo = "\n".join(textos_celulas)
+        #print(texto_completo.encode('utf-8').decode('utf-8'))
 
         indice_cabecalho += 1
 
@@ -82,8 +85,17 @@ def coletarDados(cidade, estado):
     
     dataJson = {cidade: data}
     
+    try:
+        with open("dados.json", "r") as file:
+            existing_data = json.load(file)
+    except json.decoder.JSONDecodeError: #Caso o arquivo esteja vazio!
+        existing_data = {}
+
+    existing_data.update(dataJson)
+
+    
     with open("dados.json", "w") as file:
-        json.dump(dataJson, file)
+        json.dump(existing_data, file, indent=4)  # Indentação para melhor legibilidade
 
 def clicar_proximo_cabecalho(indice):
     try:
@@ -100,10 +112,12 @@ def clicar_proximo_cabecalho(indice):
         return False
 
 try:
-    coletarDados("jucurutu", "rn")
-    coletarDados("mossoro", "rn")
+    coletarDados(sys.argv[1], sys.argv[2])
+    
+    coletarDados(sys.argv[3], sys.argv[4])
     
     driver.quit()
 
-except:
-    print('Falha nos Dados')
+except Exception as e:
+
+    print(f'Falha nos Dados: {e}')
