@@ -39,6 +39,7 @@ public class HomePage {
 
         for (Cidade cidade : listaCidades) {
             LinkedList<Double> dadosEconomicos = new LinkedList<>();
+            dadosEconomicos.add(cidade.getSalarioMedio());
             dadosEconomicos.add(cidade.getPibPerCapta());
             dadosEconomicos.add(cidade.getPercentualReceitasExternas());
             dadosEconomicos.add(cidade.getIdh());
