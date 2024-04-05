@@ -82,6 +82,7 @@ public class CidadeRepository {
             if (existe(novaCidadeDois)) {
                 int index = pegarPosicao(novaCidadeDois);
                 novaCidadeDois = todasAsCidades.get(index);
+                cidadesBuscadas.add(novaCidadeDois);
                 buscarUmaCidade(cidadeUm, ufUm);
                 extrairCidade(cidadeUm);
                 return "redirect:/cidades/comparacao";
@@ -96,11 +97,13 @@ public class CidadeRepository {
             }
 
             if (cidadeUm.equals(cidadeDois)) {
+                long tempoInicial = System.currentTimeMillis();
                 buscarUmaCidade(cidadeUm, ufUm);
                 extrairCidade(cidadeUm);
                 buscarUmaCidade(cidadeDois, ufDois);
                 extrairCidade(cidadeDois);
-                arquivoJson.delete();
+                long tempoFinal = System.currentTimeMillis();
+                System.out.println("Tempo total das duas buscas e extrações: "+(tempoFinal-tempoInicial)+"ms");
                 return "redirect:/cidades/comparacao";
             }
 
@@ -109,7 +112,6 @@ public class CidadeRepository {
                 ProcessBuilder pb1 = new ProcessBuilder("python", rootPath + "/index.py", ufUm, cidadeUm);
                 ProcessBuilder pb2 = new ProcessBuilder("python", rootPath + "/index.py", ufDois, cidadeDois);
                 Process p1 = pb1.start();
-                Thread.sleep(5);
                 Process p2 = pb2.start();
                 int exitCodeP1 = p1.waitFor();
                 int exitCodeP2 = p2.waitFor();
@@ -207,11 +209,9 @@ public class CidadeRepository {
     private void extrairCidade(String... nomeCidades) {
         Stack<LocalDate> dataAtual = lerPilha();
 
-
         long timeInicial = System.currentTimeMillis();
         try {
             FileReader leitor = new FileReader(rootPath + "/dados.json");
-            
             JSONParser parser = new JSONParser();
             JSONObject objetoJSON = (JSONObject) parser.parse(leitor);
             leitor.close();
@@ -502,13 +502,11 @@ public class CidadeRepository {
         long timeFinal = System.currentTimeMillis();
         System.out.println("tempo de execução da extração do Json: " + (timeFinal - timeInicial) + "ms");
         
-        if (nomeCidades.length == 2) {
-            try {
-                Files.deleteIfExists(Path.of(rootPath + "/dados.json"));
-            } catch (IOException e) {
-                e.getMessage();
-                e.printStackTrace();
-            }
+        try {
+            Files.deleteIfExists(Path.of(rootPath + "/dados.json"));
+        } catch (IOException e) {
+            e.getMessage();
+            e.printStackTrace();
         }
     }
 
@@ -526,7 +524,6 @@ public class CidadeRepository {
 
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("historico.bin"))) {
             dataAtual = (Stack<LocalDate>) inputStream.readObject();
-            // System.out.println("Pilha lida com sucesso! \n");
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo não encontrado. Criando arquivo...");
             escreverPilha(dataAtual); // Cria um novo arquivo
@@ -539,7 +536,6 @@ public class CidadeRepository {
     private void escreverPilha(Stack<LocalDate> dataAtual) {
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("historico.bin"))) {
             outputStream.writeObject(dataAtual);
-            // System.out.println("Pilha gravada! \n");
         } catch (IOException e) {e.printStackTrace();}
     }
 
