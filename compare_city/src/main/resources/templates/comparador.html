@@ -80,7 +80,6 @@
 
         ul {
             list-style-type: none;
-            /* Remove as marcas padrão da lista */
             padding: 0;
         }
 
@@ -90,45 +89,57 @@
             color: white;
         }
 
-        /* Adiciona quebras de linha entre os itens da lista */
         li:not(:last-child)::after {
             content: "\a";
-            /* Caractere de quebra de linha */
             white-space: pre;
-            /* Define que a quebra de linha é tratada como um caractere */
         }
 
         button {
             background-color: #007bff;
-            /* Cor de fundo do botão */
             color: #fff;
-            /* Cor do texto do botão */
             padding: 5px 20px;
-            /* Espaçamento interno do botão */
             border: none;
-            /* Remover borda */
             border-radius: 5px;
-            /* Borda arredondada */
             cursor: pointer;
-            /* Cursor ao passar sobre o botão */
         }
 
-        /* Estilo do botão quando hover (passar o mouse) */
         button:hover {
             background-color: #0056b3;
-            /* Cor de fundo alterada */
+        }
+
+        .back-arrow {
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .destaque {
+            background-color: yellow;
+            font-weight: bold;
+            color: rgb(0, 0, 0);
+            white-space: nowrap;
+        }
+
+        .economia {
+            background-color: rgb(46, 46, 46);
+            color: rgb(229, 255, 0);
+            white-space: nowrap;
         }
     </style>
-
 </head>
 
 <body>
 
-    <h1>Comparação de Cidades</h1>
+    <h1>
+        <span class="back-arrow" onclick="voltar()">⬅️</span>
+        Comparação de Cidades
+    </h1>
 
-    <label for="limitePopulacao">Quantidade Populacional:</label>
+    <label for="limitePopulacao">Quantidade Populacional</label>
     <input type="number" id="limitePopulacao" name="limitePopulacao" placeholder="Ex: 1000000">
     <button onclick="destacarPopulacao()">Aplicar</button>
+    <br>
+    <label for="limitePopulacao">Cidade Mais Rica </label>
+    <button onclick="destacarEconomia()">Aplicar</button>
 
     <div class="container">
 
@@ -248,8 +259,7 @@
             <tr>
                 <th style="background-color: rgb(46, 46, 46); color: rgb(229, 255, 0); white-space: nowrap;">
                     Dados Econômicos:</th>
-                <td style="background-color: rgb(46, 46, 46); color: rgb(229, 255, 0); white-space: nowrap;"
-                    th:each="economia, iterStat : ${dadosEconomicos}" th:text="${economia}" class="economia"></td>
+                <td class="economia" th:each="economia, iterStat : ${dadosEconomicos}" th:text="${economia}"></td>
             </tr>
 
             <tr>
@@ -287,7 +297,7 @@
     </div>
 
     <div class="centered-list">
-        <h2>Histórico de acesso
+        <h2>Histórico de Raspagem
             <button type="button" onclick="limparPilha()">Limpar pilhar</button>
         </h2>
         <ul>
@@ -321,6 +331,10 @@
             }
         }
 
+        function voltar() {
+            window.history.back();
+        }
+
         function destacarPopulacao() {
             var limitePopulacao = document.getElementById("limitePopulacao").value;
 
@@ -344,6 +358,31 @@
                         populacaoElement.style.color = 'red';
                     }
                 }
+            }
+        }
+
+        function destacarEconomia() {
+            var economiaCells = document.querySelectorAll('.economia');
+
+            // Converter o conteúdo da primeira célula para um array JavaScript
+            var valores1 = JSON.parse(economiaCells[0].textContent);
+            var valores2 = JSON.parse(economiaCells[1].textContent);
+
+            var maxValor1 = Math.max(...valores1);
+            var maxValor2 = Math.max(...valores2);
+
+            // Remover destaque de todas as células
+            economiaCells.forEach(cell => {
+                cell.classList.remove('destaque');
+            });
+
+            // Destacar a célula com o maior valor
+            if (maxValor1 > maxValor2) {
+                economiaCells[0].classList.add('destaque');
+                economiaCells[0].classList.remove('economia');
+            } else {
+                economiaCells[1].classList.add('destaque');
+                economiaCells[1].classList.remove('economia');
             }
         }
 
