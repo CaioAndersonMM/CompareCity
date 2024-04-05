@@ -18,8 +18,17 @@ public class CidadeController {
         this.cidadesService = cidadesService;
     }
 
-    public String buscarCidade(String cidadeUm, String ufUm, String cidadeDois, String ufDois) {
-        return this.cidadesService.buscarCidade(cidadeUm, ufUm, cidadeDois, ufDois);
+    public String buscarCidades(String cidadeUm, String ufUm, String cidadeDois, String ufDois) {
+        if (ufUm.isEmpty() || cidadeUm.isEmpty()) { //dados ficticios
+            ufUm = "rn";
+            cidadeUm = "mossoro";
+        }
+        if (ufDois.isEmpty() || cidadeDois.isEmpty()) { //dados ficticios
+            ufDois = "rn";
+            cidadeDois = "jucurutu";
+        }
+        
+        return this.cidadesService.buscarCidades(cidadeUm, ufUm, cidadeDois, ufDois);
     }
 
     public List<Cidade> getListaCidades() {

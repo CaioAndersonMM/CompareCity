@@ -111,8 +111,6 @@ def clicar_proximo_cabecalho(indice):
 try:
     coletarDados(sys.argv[1], sys.argv[2])
     
-    coletarDados(sys.argv[3], sys.argv[4])
-    
     driver.quit()
 
 except Exception as e:

@@ -15,8 +15,8 @@ public class CidadesService {
         cidadeRepository = new CidadeRepository();
     }
 
-    public String buscarCidade(String cidadeUm, String ufUm, String cidadeDois, String ufDois) {
-        return cidadeRepository.buscarCidade(cidadeUm, ufUm, cidadeDois, ufDois);
+    public String buscarCidades(String cidadeUm, String ufUm, String cidadeDois, String ufDois) {
+        return cidadeRepository.buscarCidades(cidadeUm, ufUm, cidadeDois, ufDois);
     }
 
 

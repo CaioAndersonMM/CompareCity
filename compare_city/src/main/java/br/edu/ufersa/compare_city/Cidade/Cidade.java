@@ -17,7 +17,7 @@ public class Cidade {
     private int populacao;
     
     @JsonProperty("densidade_demografica")
-    private int densidadeDemografica;
+    private double densidadeDemografica;
 
     /* informações TRABALHO E RENDIMENTO */
     @JsonProperty("salario_medio")
@@ -62,7 +62,7 @@ public class Cidade {
 
     /* informações ECONOMIA */
     @JsonProperty("pib_percapita")
-    private double pibPerCapta;
+    private double pibPerCapita;
     
     @JsonProperty("percentual_receitas_externas")
     private double percentualReceitasExternas;
@@ -112,11 +112,11 @@ public class Cidade {
     public Cidade() {
     }
 
-    public Cidade(String nome, String uf, int populacao, int densidadeDemografica, double salarioMedio,
+    public Cidade(String nome, String uf, int populacao, double densidadeDemografica, double salarioMedio,
             int pessoalOcupado, double populacaoOcupada, double percentualRendimentoNominalPerCapta,
             double taxaEscolarizacao, double idebInicioFundamental, double idebFinalFundamental,
             int matriculasFundamental, int matriculasMedio, int docentesFundamental, int docentesMedio,
-            int estabelecimentosFundamental, int estabelecimentosMedio, double pibPerCapta,
+            int estabelecimentosFundamental, int estabelecimentosMedio, double pibPerCapita,
             double percentualReceitasExternas, double idh, double receitasRealizadas, double despesasEmpenhadas,
             double mortalidadeInfantil, double estabelecimentosSaude, double areaUrbanizada,
             double esgotamentoSanitario, double percentualArborizacao, double percentualUrbanizacaoViasPublicas,
@@ -139,7 +139,7 @@ public class Cidade {
         this.docentesMedio = docentesMedio;
         this.estabelecimentosFundamental = estabelecimentosFundamental;
         this.estabelecimentosMedio = estabelecimentosMedio;
-        this.pibPerCapta = pibPerCapta;
+        this.pibPerCapita = pibPerCapita;
         this.percentualReceitasExternas = percentualReceitasExternas;
         this.idh = idh;
         this.receitasRealizadas = receitasRealizadas;
@@ -157,7 +157,7 @@ public class Cidade {
 
     public LinkedList<Double> getDadosEconomia() {
         dadosEconomia.clear();
-        dadosEconomia.add(pibPerCapta);
+        dadosEconomia.add(pibPerCapita);
         dadosEconomia.add(percentualReceitasExternas);
         dadosEconomia.add(idh);
         dadosEconomia.add(receitasRealizadas);
@@ -190,11 +190,11 @@ public class Cidade {
         this.populacao = populacao;
     }
 
-    public int getDensidadeDemografica() {
+    public double getDensidadeDemografica() {
         return densidadeDemografica;
     }
 
-    public void setDensidadeDemografica(int densidadeDemografica) {
+    public void setDensidadeDemografica(double densidadeDemografica) {
         this.densidadeDemografica = densidadeDemografica;
     }
 
@@ -302,12 +302,12 @@ public class Cidade {
         this.estabelecimentosMedio = estabelecimentosMedio;
     }
 
-    public double getPibPerCapta() {
-        return pibPerCapta;
+    public double getPibPerCapita() {
+        return pibPerCapita;
     }
 
-    public void setPibPerCapta(double pibPerCapta) {
-        this.pibPerCapta = pibPerCapta;
+    public void setPibPerCapita(double pibPerCapita) {
+        this.pibPerCapita = pibPerCapita;
     }
 
     public double getPercentualReceitasExternas() {
@@ -413,6 +413,8 @@ public class Cidade {
     public void setSistemaCosteiroMarinho(String sistemaCosteiroMarinho) {
         this.sistemaCosteiroMarinho = sistemaCosteiroMarinho;
     }
+
+
     public String toString() {
         return "Nome: " + nome +
                 "\nUF: " + uf +
@@ -431,7 +433,7 @@ public class Cidade {
                 "\nDocentes no Médio: " + docentesMedio +
                 "\nEstabelecimentos de Ensino Fundamental: " + estabelecimentosFundamental +
                 "\nEstabelecimentos de Ensino Médio: " + estabelecimentosMedio +
-                "\nPIB Per Capita: " + pibPerCapta +
+                "\nPIB Per Capita: " + pibPerCapita +
                 "\nPercentual de Receitas Externas: " + percentualReceitasExternas +
                 "\nIDH: " + idh +
                 "\nReceitas Realizadas: " + receitasRealizadas +

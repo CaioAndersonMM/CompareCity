@@ -5,10 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,6 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,14 +31,16 @@ public class CidadeRepository {
 
     private List<Cidade> cidadesBuscadas = new ArrayList<>(2);
     private static List<Cidade> todasAsCidades = new LinkedList<>();
+    private final String rootPath = System.getProperty("user.dir");
 
 
     public CidadeRepository() {
     }
 
     public CidadeRepository(String cidadeUm, String ufUm, String cidadeDois, String ufDois) {
-        buscarCidade(cidadeUm, ufUm, cidadeDois, ufDois);
+        buscarCidades(cidadeUm, ufUm, cidadeDois, ufDois);
     }
+
 
 
     /**
@@ -40,9 +49,7 @@ public class CidadeRepository {
      * e raspa os dados coletados para um arquivo Json
      * 
      * <p>
-     * Após raspado, o dado será extraído quando chamado o método
-     * {@link compare_city.src.main.java.br.edu.bufersa.compara_city.Cidade.CidadeRepository#extrairCidade()
-     * extrairCidade()}
+     * Após raspado, o dado será extraído quando chamado o método extrairCidade()
      * 
      * @param cidadeUm   - nome da primeira cidade a ser pesquisada
      * @param cidadeDois - nome da segunda cidade a ser pesquisada
@@ -50,7 +57,9 @@ public class CidadeRepository {
      * @param ufDois     - unidade federativa da segunda cidade
      * @see (IBGE Cidades) https://cidades.ibge.gov.br/
      **/
-    public String buscarCidade(String cidadeUm, String ufUm, String cidadeDois, String ufDois) {
+    public String buscarCidades(String cidadeUm, String ufUm, String cidadeDois, String ufDois) {
+
+        cidadesBuscadas = new ArrayList<Cidade>(2);
         Cidade novaCidadeUm = new Cidade();
         Cidade novaCidadeDois = new Cidade();
         novaCidadeUm.setNome(cidadeUm); novaCidadeUm.setUf(ufUm);
@@ -61,62 +70,135 @@ public class CidadeRepository {
                 int indexUm = pegarPosicao(novaCidadeUm);
                 novaCidadeUm = todasAsCidades.get(indexUm);
                 cidadesBuscadas.add(novaCidadeUm);
+                
                 if (existe(novaCidadeDois)) {
                     int indexDois = pegarPosicao(novaCidadeDois);
                     novaCidadeDois = todasAsCidades.get(indexDois);
                     cidadesBuscadas.add(novaCidadeDois);
                     return "redirect:/cidades/comparacao";
                 }
+                buscarUmaCidade(cidadeDois, ufDois);
+                extrairCidade(cidadeDois);
+                return "redirect:/cidades/comparacao"; 
             }
+
             if (existe(novaCidadeDois)) {
-                int indexDois = pegarPosicao(novaCidadeDois);
-                novaCidadeDois = todasAsCidades.get(indexDois);
+                int index = pegarPosicao(novaCidadeDois);
+                novaCidadeDois = todasAsCidades.get(index);
+                buscarUmaCidade(cidadeUm, ufUm);
+                extrairCidade(cidadeUm);
+                return "redirect:/cidades/comparacao";
             }
 
-            long timeInicial = System.currentTimeMillis();
-            if (ufUm.isEmpty() || ufDois.isEmpty()) { //dados ficticios
-                ufUm = ufDois = "rn";
-                cidadeUm = "jucurutu";
-                cidadeDois = "mossoro";
-            }
-
-            File arquivoJson = new File(System.getProperty("user.dir")+"/dados.json");
+            /*
+             * Cria novo arquvo Json para o script Python escrever nele
+             */
+            File arquivoJson = new File(rootPath + "/dados.json");
             if (!arquivoJson.exists()) {    
                 arquivoJson.createNewFile();
             }
-        
-        
-            // Executando o script Python
-            String rootPath = System.getProperty("user.dir");
-            ProcessBuilder pb = new ProcessBuilder("python", rootPath + "/index.py", ufUm, cidadeUm, ufDois, cidadeDois);
-            Process p = pb.start();
-            // Aguardando o término do script Python
-            int exitCode = p.waitFor();
 
-            // Verificando se houve algum erro
-            if (exitCode != 0) {
-                // Lendo a saída de erro, se houver
+            if (cidadeUm.equals(cidadeDois) && ufUm.equals(ufDois)) {
+                buscarUmaCidade(cidadeUm, ufUm);
+                extrairCidade(cidadeUm);
+                buscarUmaCidade(cidadeDois, ufDois);
+                extrairCidade(cidadeDois);
+                return "redirect:/cidades/comparacao";
+            }
+
+            long timeInicial = System.currentTimeMillis();
+            try {
+                ProcessBuilder pb1 = new ProcessBuilder("python", rootPath + "/index.py", ufUm, cidadeUm);
+                ProcessBuilder pb2 = new ProcessBuilder("python", rootPath + "/index.py", ufDois, cidadeDois);
+                Process p1 = pb1.start();
+                Thread.sleep(5);
+                Process p2 = pb2.start();
+                int exitCodeP1 = p1.waitFor();
+                int exitCodeP2 = p2.waitFor();
+
+                
+                if (exitCodeP1 != 0) {
+
+                    BufferedReader errorReader = new BufferedReader(new InputStreamReader(p1.getErrorStream()));
+                    StringBuilder errorOutput = new StringBuilder();
+                    String errorLine;
+                    while ((errorLine = errorReader.readLine()) != null) {
+                    errorOutput.append(errorLine).append("\n");
+                    }
+                    throw new Exception("Erro ao executar script Python: " + errorOutput.toString());
+                }
+
+                if (exitCodeP2 != 0) {
+
+                    BufferedReader errorReader = new BufferedReader(new InputStreamReader(p2.getErrorStream()));
+                    StringBuilder errorOutput = new StringBuilder();
+                    String errorLine;
+                    while ((errorLine = errorReader.readLine()) != null) {
+                    errorOutput.append(errorLine).append("\n");
+                    }
+                    throw new Exception("Erro ao executar script Python: " + errorOutput.toString());
+                }
+
+                extrairCidade(cidadeUm, cidadeDois);
+
+            } catch(IOException | InterruptedException e) {
+                e.getMessage();
+                e.printStackTrace();
+                throw e;
+            }
+            long timeFinal = System.currentTimeMillis();
+            System.out.println("tempo de execução dos dois processos do programa: " + (timeFinal - timeInicial) + "ms");
+                
+
+        } catch (Exception e) {return e.getMessage();}
+        return "redirect:/cidades/comparacao";
+    }
+
+
+
+
+    /**
+     * <p>
+     * Executa o programa Python e raspa os dados da cidade especificada pelos parâmetros
+     * 
+     * @param cidade - nome da cidade a ser buscada
+     * @param uf - nome da unidade federativa da cidade a ser buscada
+     * @throws Exception caso algum erro ocorra na execução do programa de raspagem 
+     */
+    private void buscarUmaCidade(String cidade, String uf) throws Exception{
+        long timeInicial = System.currentTimeMillis();
+
+        File arquivoJson = new File(rootPath + "/dados.json");
+        if (!arquivoJson.exists()) {    
+            arquivoJson.createNewFile();
+        }
+
+        try {
+
+            ProcessBuilder pb = new ProcessBuilder("python", rootPath + "/index.py", uf, cidade);
+            Process p = pb.start();             // Executa o programa Python
+            int exitCode = p.waitFor();         // Aguarda o término do programa Python
+            
+            if (exitCode != 0) {                // Verifica se houve algum erro na execução do programa
+
                 BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
                 StringBuilder errorOutput = new StringBuilder();
                 String errorLine;
                 while ((errorLine = errorReader.readLine()) != null) {
                     errorOutput.append(errorLine).append("\n");
                 }
-                return "Erro ao executar script Python: " + errorOutput.toString();
+                throw new Exception("Erro ao executar script Python: " + errorOutput.toString());
             }
-            long timeFinal = System.currentTimeMillis();
-            System.out.println("tempo de execução do programa Python: " + (timeFinal - timeInicial) + "ms");
-            extrairCidade();
-            return "redirect:/cidades/comparacao";
-
-        } catch (IOException | InterruptedException e) {
+        } catch(IOException | InterruptedException e) {
+            e.getMessage();
             e.printStackTrace();
-            return "Erro ao executar script Python: " + e.getMessage();
-        }
+        } 
+        long timeFinal = System.currentTimeMillis();
+        System.out.println("tempo de execução do programa Python: " + (timeFinal - timeInicial) + "ms");
     }
 
-
     
+
 
     /**
      * <p>
@@ -124,108 +206,303 @@ public class CidadeRepository {
      * e adiciona a lista de cidades buscadas
      * 
      */
-    private void extrairCidade() {
-        cidadesBuscadas = new ArrayList<Cidade>(2);
-        ObjectMapper objectMapper = new ObjectMapper();
-        Stack<LocalDate> dataAtual = new Stack<>(); // Pilha para armazenar a data atual
+    private void extrairCidade(String... nomeCidades) {
+        Stack<LocalDate> dataAtual = lerPilha();
 
-        // Lendo a pilha do arquivo binário
-        dataAtual = lerPilha();
+
         long timeInicial = System.currentTimeMillis();
         try {
-            @SuppressWarnings("unchecked")
-            Map<String, Map<String, String>> map = objectMapper.readValue(new File("dados.json"), Map.class);
+            FileReader leitor = new FileReader(rootPath + "dados.json");
+            
+            JSONParser parser = new JSONParser();
+            JSONArray arrayJSON = (JSONArray) parser.parse(leitor);
 
-            for (Map.Entry<String, Map<String, String>> entry : map.entrySet()) {
-                String nome = entry.getKey();
-                Map<String, String> cidadeInfo = entry.getValue();
-
+            for (int i = 0; i < arrayJSON.size(); i++) {
+                JSONObject dadosJSON = (JSONObject) arrayJSON.get(i);
                 Cidade cidade = new Cidade();
 
-                cidade.setNome(nome);
-                cidade.setUf(cidadeInfo.get("uf"));
-                cidade.setPopulacao(Integer.parseInt(cidadeInfo.get("populacao").replaceAll("[^0-9]", "")));
-                cidade.setDensidadeDemografica(Integer.parseInt(
-                    cidadeInfo.get("densidade_demografica").replaceAll("[^0-9]", "")));
-                cidade.setSalarioMedio(Double.parseDouble(
-                    cidadeInfo.get("salario_medio").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setPessoalOcupado(Integer.parseInt(
-                    cidadeInfo.get("pessoal_ocupado").replaceAll("[^0-9]", "")));
-                cidade.setPopulacaoOcupada(Double.parseDouble(
-                    cidadeInfo.get("populacao_ocupada").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setPercentualRendimentoNominalPerCapta(Double.parseDouble(
-                    cidadeInfo.get("percentual_rendimento_nominal_per_capita_de_ate_dois_tercos_salario_minimo")
-                    .replaceAll("[^0-9.,]", "").replace(',', '.')));
-                cidade.setTaxaEscolarizacao(Double.parseDouble(
-                    cidadeInfo.get("taxa_escolarizacao").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setIdebInicioFundamental(Double.parseDouble(
-                    cidadeInfo.get("ideb_inicio_fundamental").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setIdebFinalFundamental(Double.parseDouble(
-                    cidadeInfo.get("ideb_final_fundamental").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setMatriculasFundamental(Integer.parseInt(
-                    cidadeInfo.get("matriculas_fundamental").replaceAll("[^0-9]", "")));
-                cidade.setMatriculasMedio(Integer.parseInt(
-                    cidadeInfo.get("matriculas_medio").replaceAll("[^0-9]", "")));
-                cidade.setDocentesFundamental(Integer.parseInt(
-                    cidadeInfo.get("docentes_fundamental").replaceAll("[^0-9]", "")));
-                cidade.setDocentesMedio(Integer.parseInt(
-                    cidadeInfo.get("docentes_medio").replaceAll("[^0-9]", "")));
-                cidade.setEstabelecimentosFundamental(Integer.parseInt(
-                    cidadeInfo.get("estabelecimentos_ensino_fundamental").replaceAll("[^0-9]", "")));
-                cidade.setEstabelecimentosMedio(Integer.parseInt(
-                    cidadeInfo.get("estabelecimentos_ensino_medio").replaceAll("[^0-9]", "")));
-                cidade.setPibPerCapta(Double.parseDouble(
-                    cidadeInfo.get("pib_percapita").replaceAll("[^0-9.,]", "").split(",")[0]
-                    .replaceAll(",", "").trim()));
-                cidade.setPercentualReceitasExternas(Double.parseDouble(
-                    cidadeInfo.get("percentual_receitas_externas").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setIdh(Double.parseDouble(
-                    cidadeInfo.get("idh").replaceAll("[^0-9.,]", "").replace(',', '.')));
-                cidade.setReceitasRealizadas(Double.parseDouble(
-                    cidadeInfo.get("receitas_realizadas").replaceAll("[^0-9,]", "")
-                    .replaceAll(",", ".").trim()));
-                cidade.setDespesasEmpenhadas(Double.parseDouble(
-                    cidadeInfo.get("despesas_empenhadas").replaceAll("[^0-9,]", "")
-                    .replaceAll(",", ".").trim()));
-                cidade.setMortalidadeInfantil(Double.parseDouble(
-                    cidadeInfo.get("mortalidade_infantil").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setEstabelecimentosSaude(Double.parseDouble(
-                    cidadeInfo.get("estabelecimentos_saude").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setAreaUrbanizada(Double.parseDouble(
-                    cidadeInfo.get("area_urbanizada").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setEsgotamentoSanitario(Double.parseDouble(
-                    cidadeInfo.get("esgotamento_sanitario").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setPercentualArborizacao(Double.parseDouble(
-                    cidadeInfo.get("percentual_arborizacao").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setPercentualUrbanizacaoViasPublicas(Double.parseDouble(
-                    cidadeInfo.get("percentual_urbanizacao_vias_publicas").replaceAll("[^0-9.,]", "")
-                    .replace(',', '.')));
-                cidade.setPopulacaoExpostaRisco(Integer.parseInt(
-                    cidadeInfo.get("populacao_exposta_risco").replaceAll("[^0-9]", "")));
-                cidade.setBioma(cidadeInfo.get("bioma"));
-                cidade.setSistemaCosteiroMarinho(cidadeInfo.get("sistema_costeiro_marinho"));
-                
 
-                cidadesBuscadas.add(cidade);
-                todasAsCidades.add(cidade);
-            }
+                cidade.setNome(nomeCidades[i]);
+                
+                String uf = (String) dadosJSON.get("uf");
+                cidade.setUf(uf);
+
+                String populacao = (String) dadosJSON.get("populacao");
+                if (populacao.contains("Sem dados") || populacao.contains("- ")) {
+                    cidade.setPopulacao(-1);
+                } else {
+                    populacao = populacao.replaceAll("[\\D]", "\0");
+                    cidade.setPopulacao(Integer.parseInt(populacao));
+                }
+                
+                String densidadeDemografica = (String) dadosJSON.get("densidade_demografica");
+                if (densidadeDemografica.contains("Sem dados") || densidadeDemografica.contains("- ")) {
+                    cidade.setDensidadeDemografica(-1);
+                } else {
+                    densidadeDemografica = densidadeDemografica.replace(".", "\0");
+                    densidadeDemografica = densidadeDemografica.replaceAll("[^\\d,]", "\0");
+                    densidadeDemografica = densidadeDemografica.replace(",", ".");
+                    cidade.setDensidadeDemografica(Integer.parseInt(populacao));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String pessoalOcupado = (String) dadosJSON.get("pessoal_ocupado");
+                if (pessoalOcupado.contains("Sem dados") || pessoalOcupado.contains("- ")) {
+                    cidade.setPessoalOcupado(-1);
+                } else {
+                    pessoalOcupado = pessoalOcupado.replaceAll("[^\\d.]", "\0");
+                    pessoalOcupado = pessoalOcupado.replace(".", "\0");
+                    cidade.setPessoalOcupado(Integer.parseInt(pessoalOcupado));
+                }
+
+                String populacaoOcupada = (String) dadosJSON.get("populacao_ocupada");
+                if (populacaoOcupada.contains("Sem dados") || populacaoOcupada.contains("- ")) {
+                    cidade.setPopulacaoOcupada(-1);
+                } else {
+                    populacaoOcupada = populacaoOcupada.replaceAll("[^\\d,]", "\0");
+                    populacaoOcupada = populacaoOcupada.replace(",", ".");
+                    cidade.setPopulacaoOcupada(Double.parseDouble(populacaoOcupada));
+                }
+
+                String percentualRendimento = (String) dadosJSON.get("percentual_rendimento_nominal_per_capita_de_ate_dois_tercos_salario_minimo");
+                if (percentualRendimento.contains("Sem dados") || percentualRendimento.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    percentualRendimento = percentualRendimento.replaceAll("[^\\d,]", "\0");
+                    percentualRendimento = percentualRendimento.replace(",", ".");
+                    cidade.setPercentualRendimentoNominalPerCapta(Double.parseDouble(percentualRendimento));
+                }
+
+                String taxaEscolarizacao = (String) dadosJSON.get("taxa_escolarizacao");
+                if (taxaEscolarizacao.contains("Sem dados") || taxaEscolarizacao.contains("- ")) {
+                    cidade.setTaxaEscolarizacao(-1);
+                } else {
+                    taxaEscolarizacao = taxaEscolarizacao.replaceAll("[^\\d,]", "\0");
+                    taxaEscolarizacao = taxaEscolarizacao.replace(",", ".");
+                    cidade.setTaxaEscolarizacao(Double.parseDouble(taxaEscolarizacao));
+                }
+
+                String idebInicio = (String) dadosJSON.get("ideb_inicio_fundamental");
+                if (idebInicio.contains("Sem dados") || idebInicio.contains("- ")) {
+                    cidade.setIdebFinalFundamental(-1);
+                } else {
+                    idebInicio = idebInicio.replaceAll("[^\\d,]", "\0");
+                    idebInicio = idebInicio.replace(",", ".");
+                    cidade.setIdebInicioFundamental(Double.parseDouble(idebInicio));
+                }
+
+                String idebFinal = (String) dadosJSON.get("ideb_final_fundamental");
+                if (idebFinal.contains("Sem dados") || idebFinal.contains("- ")) {
+                    cidade.setIdebFinalFundamental(-1);
+                } else {
+                    idebFinal = idebFinal.replaceAll("[^\\d,]", "\0");
+                    idebFinal = idebFinal.replace(",", ".");
+                    cidade.setIdebFinalFundamental(Double.parseDouble(idebFinal));
+                }
+
+                String matriculasFundamental = (String) dadosJSON.get("matriculas_fundamental");
+                if (matriculasFundamental.contains("Sem dados") || matriculasFundamental.contains("- ")) {
+                    cidade.setMatriculasFundamental(-1);
+                } else {
+                    matriculasFundamental = matriculasFundamental.replaceAll("[^\\d]", "\0");
+                    cidade.setMatriculasFundamental(Integer.parseInt(matriculasFundamental));
+                }
+
+                String matriculasMedio = (String) dadosJSON.get("matriculas_medio");
+                if (matriculasMedio.contains("Sem dados") || matriculasMedio.contains("- ")) {
+                    cidade.setMatriculasMedio(-1);
+                } else {
+                    matriculasMedio = matriculasMedio.replaceAll("[^\\d]", "\0");
+                    cidade.setMatriculasMedio(Integer.parseInt(matriculasMedio));
+                }
+
+                String docentesFundamental = (String) dadosJSON.get("docentes_fundamental");
+                if (docentesFundamental.contains("Sem dados") || docentesFundamental.contains("- ")) {
+                    cidade.setDocentesFundamental(-1);
+                } else {
+                    docentesFundamental = docentesFundamental.replaceAll("[^\\d]", "\0");
+                    cidade.setDocentesFundamental(Integer.parseInt(docentesFundamental));
+                }
+                
+                String docentesMedio = (String) dadosJSON.get("docentes_medio");
+                if (docentesMedio.contains("Sem dados") || docentesMedio.contains("- ")) {
+                    cidade.setDocentesMedio(-1);
+                } else {
+                    docentesMedio = docentesMedio.replaceAll("[^\\d]", "\0");
+                    cidade.setDocentesMedio(Integer.parseInt(docentesMedio));
+                }
+
+                String escolaFundamental = (String) dadosJSON.get("estabelecimentos_ensino_fundamental");
+                if (escolaFundamental.contains("Sem dados") || escolaFundamental.contains("- ")) {
+                    cidade.setEstabelecimentosFundamental(-1);
+                } else {
+                    escolaFundamental = escolaFundamental.replaceAll("[\\D]", "\0");
+                    cidade.setEstabelecimentosFundamental(Integer.parseInt(escolaFundamental));
+                }
+
+                String escolaMedio = (String) dadosJSON.get("estabelecimentos_ensino_medio");
+                if (escolaMedio.contains("Sem dados") || escolaMedio.contains("- ")) {
+                    cidade.setEstabelecimentosMedio(-1);
+                } else {
+                    escolaMedio = escolaMedio.replaceAll("[\\D]", "\0");
+                    cidade.setEstabelecimentosMedio(Integer.parseInt(escolaMedio));
+                }
+
+                String pibPerCapita = (String) dadosJSON.get("pib_percapita");
+                if (pibPerCapita.contains("Sem dados") || pibPerCapita.contains("- ")) {
+                    cidade.setPibPerCapita(-1);
+                } else {
+                    pibPerCapita = pibPerCapita.replace(".", "\0");
+                    pibPerCapita = pibPerCapita.replaceAll("[^\\d,]", "\0");
+                    pibPerCapita = pibPerCapita.replace(",", ".");
+                    cidade.setPibPerCapita(Double.parseDouble(pibPerCapita));
+                }
+
+                String percentualReceitas = (String) dadosJSON.get("percentual_receitas_externas");
+                if (percentualReceitas.contains("Sem dados") || percentualReceitas.contains("- ")) {
+                    cidade.setPercentualReceitasExternas(-1);
+                } else {
+                    percentualReceitas = percentualReceitas.replaceAll("[^\\d,]", "\0");
+                    percentualReceitas = percentualReceitas.replace(",", ".");
+                    cidade.setPercentualReceitasExternas(Double.parseDouble(percentualReceitas));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+                String salarioMedio = (String) dadosJSON.get("salario_medio");
+                if (salarioMedio.contains("Sem dados") || salarioMedio.contains("- ")) {
+                    cidade.setSalarioMedio(-1);
+                } else {
+                    salarioMedio = salarioMedio.replaceAll("[^\\d,]", "\0");
+                    salarioMedio = salarioMedio.replace(",", ".");
+                    cidade.setDensidadeDemografica(Double.parseDouble(salarioMedio));
+                }
+
+
+            }            
+
+                
+            
 
             // GRAVA PILHA NUM ARQUIVO BINARIO
             dataAtual.push(LocalDate.now());
             escreverPilha(dataAtual);
 
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             e.getMessage();
             e.printStackTrace();
         }
@@ -234,16 +511,19 @@ public class CidadeRepository {
         System.out.println("tempo de execução da extração do Json: " + (timeFinal - timeInicial) + "ms");
         
         // try {
-        //    Files.deleteIfExists(Path.of(System.getProperty("user.dir") + "/dados.json"));
+        //    Files.deleteIfExists(Path.of(rootPath + "/dados.json"));
         // } catch (IOException e) {
         //     e.getMessage();
         //     e.printStackTrace();
         // }
     }
 
+
+
     public List<Cidade> getListaCidades() {
         return cidadesBuscadas;
     }
+
 
 
     @SuppressWarnings("unchecked")
@@ -252,7 +532,7 @@ public class CidadeRepository {
 
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("historico.bin"))) {
             dataAtual = (Stack<LocalDate>) inputStream.readObject();
-            System.out.println("Pilha lida com sucesso! \n");
+            // System.out.println("Pilha lida com sucesso! \n");
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo não encontrado. Criando arquivo...");
             escreverPilha(dataAtual); // Cria um novo arquivo
@@ -265,9 +545,10 @@ public class CidadeRepository {
     private void escreverPilha(Stack<LocalDate> dataAtual) {
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("historico.bin"))) {
             outputStream.writeObject(dataAtual);
-            System.out.println("Pilha gravada! \n");
+            // System.out.println("Pilha gravada! \n");
         } catch (IOException e) {e.printStackTrace();}
     }
+
 
 
     private boolean existe(Cidade cidade) {
@@ -276,10 +557,9 @@ public class CidadeRepository {
                 return true;
         }
         return false;
-   }
+    }
 
-
-   private int pegarPosicao(Cidade cidade) {
+    private int pegarPosicao(Cidade cidade) {
         int cont = 0;
         for (Cidade city : todasAsCidades) {
             if (city.getUf().equals(cidade.getUf()) && city.getNome().equals(cidade.getNome())) {
