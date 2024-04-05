@@ -30,7 +30,7 @@ public class Cidade {
     private double populacaoOcupada;
     
     @JsonProperty("percentual_rendimento_nominal_per_capita_de_ate_dois_tercos_salario_minimo")
-    private double percentualRendimentoNominalPerCapta;
+    private double percentualRendimentoNominalPerCapita;
 
     /* informações EDUCAÇÃO */
     @JsonProperty("taxa_escolarizacao")
@@ -81,7 +81,7 @@ public class Cidade {
     private double mortalidadeInfantil;
     
     @JsonProperty("estabelecimentos_saude")
-    private double estabelecimentosSaude;
+    private int estabelecimentosSaude;
 
     /* informações MEIO AMBIENTE */
     @JsonProperty("area_urbanizada")
@@ -113,12 +113,12 @@ public class Cidade {
     }
 
     public Cidade(String nome, String uf, int populacao, double densidadeDemografica, double salarioMedio,
-            int pessoalOcupado, double populacaoOcupada, double percentualRendimentoNominalPerCapta,
+            int pessoalOcupado, double populacaoOcupada, double percentualRendimentoNominalPerCapita,
             double taxaEscolarizacao, double idebInicioFundamental, double idebFinalFundamental,
             int matriculasFundamental, int matriculasMedio, int docentesFundamental, int docentesMedio,
             int estabelecimentosFundamental, int estabelecimentosMedio, double pibPerCapita,
             double percentualReceitasExternas, double idh, double receitasRealizadas, double despesasEmpenhadas,
-            double mortalidadeInfantil, double estabelecimentosSaude, double areaUrbanizada,
+            double mortalidadeInfantil, int estabelecimentosSaude, double areaUrbanizada,
             double esgotamentoSanitario, double percentualArborizacao, double percentualUrbanizacaoViasPublicas,
             int populacaoExpostaRisco, String bioma, String sistemaCosteiroMarinho) {
 
@@ -129,7 +129,7 @@ public class Cidade {
         this.salarioMedio = salarioMedio;
         this.pessoalOcupado = pessoalOcupado;
         this.populacaoOcupada = populacaoOcupada;
-        this.percentualRendimentoNominalPerCapta = percentualRendimentoNominalPerCapta;
+        this.percentualRendimentoNominalPerCapita = percentualRendimentoNominalPerCapita;
         this.taxaEscolarizacao = taxaEscolarizacao;
         this.idebInicioFundamental = idebInicioFundamental;
         this.idebFinalFundamental = idebFinalFundamental;
@@ -222,12 +222,12 @@ public class Cidade {
         this.populacaoOcupada = populacaoOcupada;
     }
 
-    public double getPercentualRendimentoNominalPerCapta() {
-        return percentualRendimentoNominalPerCapta;
+    public double getPercentualRendimentoNominalPerCapita() {
+        return percentualRendimentoNominalPerCapita;
     }
 
-    public void setPercentualRendimentoNominalPerCapta(double percentualRendimentoNominalPerCapta) {
-        this.percentualRendimentoNominalPerCapta = percentualRendimentoNominalPerCapta;
+    public void setPercentualRendimentoNominalPerCapita(double percentualRendimentoNominalPerCapita) {
+        this.percentualRendimentoNominalPerCapita = percentualRendimentoNominalPerCapita;
     }
 
     public double getTaxaEscolarizacao() {
@@ -350,11 +350,11 @@ public class Cidade {
         this.mortalidadeInfantil = mortalidadeInfantil;
     }
 
-    public double getEstabelecimentosSaude() {
+    public int getEstabelecimentosSaude() {
         return estabelecimentosSaude;
     }
 
-    public void setEstabelecimentosSaude(double estabelecimentosSaude) {
+    public void setEstabelecimentosSaude(int estabelecimentosSaude) {
         this.estabelecimentosSaude = estabelecimentosSaude;
     }
 
@@ -423,7 +423,7 @@ public class Cidade {
                 "\nSalário Médio: " + salarioMedio +
                 "\nPessoal Ocupado: " + pessoalOcupado +
                 "\nPopulação Ocupada: " + populacaoOcupada +
-                "\nPercentual de Rendimento Nominal Per Capita: " + percentualRendimentoNominalPerCapta +
+                "\nPercentual de Rendimento Nominal Per Capita: " + percentualRendimentoNominalPerCapita +
                 "\nTaxa de Escolarização: " + taxaEscolarizacao +
                 "\nIDEB Início Fundamental: " + idebInicioFundamental +
                 "\nIDEB Final Fundamental: " + idebFinalFundamental +

@@ -28,7 +28,8 @@ public class CidadeController {
             cidadeDois = "jucurutu";
         }
         
-        return this.cidadesService.buscarCidades(cidadeUm, ufUm, cidadeDois, ufDois);
+        return this.cidadesService.buscarCidades(cidadeUm.toLowerCase(), ufUm.toLowerCase(), 
+                                                 cidadeDois.toLowerCase(), ufDois.toLowerCase());
     }
 
     public List<Cidade> getListaCidades() {
