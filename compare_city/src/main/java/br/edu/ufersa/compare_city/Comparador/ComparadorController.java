@@ -1,5 +1,7 @@
 package br.edu.ufersa.compare_city.comparador;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Stack;
@@ -7,33 +9,33 @@ import java.util.Stack;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import br.edu.ufersa.compare_city.cidade.Cidade;
 import br.edu.ufersa.compare_city.cidade.CidadeController;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class ComparadorController {
 
     private CidadeController cidadeController = new CidadeController();
-    
 
     @GetMapping("/cidades/comparar")
     public String home(@RequestParam(name = "estado1") String estado1,
-                       @RequestParam(name = "cidade1") String cidade1,
-                       @RequestParam(name = "estado2") String estado2,
-                       @RequestParam(name = "cidade2") String cidade2) {
-        
+            @RequestParam(name = "cidade1") String cidade1,
+            @RequestParam(name = "estado2") String estado2,
+            @RequestParam(name = "cidade2") String cidade2) {
+
         return cidadeController.buscarCidades(cidade1, estado1, cidade2, estado2);
     }
-
 
     @GetMapping("/cidades/comparacao")
     public String compararCidades(Model model) {
         List<Cidade> listaCidades = cidadeController.getListaCidades();
         Stack<LocalDate> historico = cidadeController.getHistorico();
         Comparador comparador = new Comparador(listaCidades);
-        // System.out.println(listaCidades);
+        System.out.println(listaCidades);
 
         model.addAttribute("cidades", listaCidades);
         model.addAttribute("dadosEconomicos", comparador.getDadosEconomicos());
@@ -43,5 +45,26 @@ public class ComparadorController {
         model.addAttribute("historico", historico);
 
         return "comparador";
+    }
+
+    @PostMapping("/limparPilha")
+    public void limparPilha(HttpServletResponse response) throws IOException {
+        String caminhoArquivo = "historico.bin";
+
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(caminhoArquivo);
+        
+            // Truncar o conteúdo do arquivo, efetivamente limpando-o
+            fileOutputStream.getChannel().truncate(0);
+            fileOutputStream.close();
+
+            // Definir o status da resposta como 200 (OK)
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("Pilha limpa com sucesso!");
+        } catch (IOException e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("Erro ao limpar a pilha.");
+        }
     }
 }

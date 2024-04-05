@@ -26,9 +26,7 @@
             border-collapse: collapse;
             background-color: #fff;
             display: block;
-            /* Exibir a tabela como bloco */
             width: auto;
-            /* Largura automática */
         }
 
         th,
@@ -41,7 +39,6 @@
         th {
             background-color: #f2f2f2;
             width: 200px;
-            /* Largura do cabeçalho */
         }
 
         tr:nth-child(even) {
@@ -62,20 +59,18 @@
 
         .container {
             width: 100%;
-            /* Define a largura da div como 100% */
             background-color: white;
-            /* Define a cor de fundo como branco */
             overflow-x: auto;
-            /* Adiciona uma barra de rolagem horizontal caso a tabela seja maior que a largura da div */
         }
 
-        h1, h2,
+        h1,
+        h2,
         p1 {
             background-color: #333;
             color: white;
         }
 
-        label{
+        label {
             color: white;
         }
 
@@ -101,6 +96,27 @@
             /* Caractere de quebra de linha */
             white-space: pre;
             /* Define que a quebra de linha é tratada como um caractere */
+        }
+
+        button {
+            background-color: #007bff;
+            /* Cor de fundo do botão */
+            color: #fff;
+            /* Cor do texto do botão */
+            padding: 5px 20px;
+            /* Espaçamento interno do botão */
+            border: none;
+            /* Remover borda */
+            border-radius: 5px;
+            /* Borda arredondada */
+            cursor: pointer;
+            /* Cursor ao passar sobre o botão */
+        }
+
+        /* Estilo do botão quando hover (passar o mouse) */
+        button:hover {
+            background-color: #0056b3;
+            /* Cor de fundo alterada */
         }
     </style>
 
@@ -230,8 +246,7 @@
 
             </tr>
             <tr>
-                <th
-                style="background-color: rgb(46, 46, 46); color: rgb(229, 255, 0); white-space: nowrap;">
+                <th style="background-color: rgb(46, 46, 46); color: rgb(229, 255, 0); white-space: nowrap;">
                     Dados Econômicos:</th>
                 <td style="background-color: rgb(46, 46, 46); color: rgb(229, 255, 0); white-space: nowrap;"
                     th:each="economia, iterStat : ${dadosEconomicos}" th:text="${economia}" class="economia"></td>
@@ -272,7 +287,9 @@
     </div>
 
     <div class="centered-list">
-        <h2>Histórico de acesso</h2>
+        <h2>Histórico de acesso
+            <button type="button" onclick="limparPilha()">Limpar pilhar</button>
+        </h2>
         <ul>
             <li th:each="data : ${historico}">
                 <span th:text="${data}"></span>
@@ -329,6 +346,30 @@
                 }
             }
         }
+
+        function limparPilha() {
+            var urlLimparPilha = "/limparPilha";
+
+            fetch(urlLimparPilha, {
+                method: 'POST'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text(); // Retorna o corpo da resposta como texto
+                    } else {
+                        throw new Error('Erro ao apagar arquivo historico.bin');
+                    }
+                })
+                .then(data => {
+                    // Aqui, 'data' contém a mensagem retornada pelo servidor
+                    alert(data);
+                })
+                .catch(error => {
+                    console.error('Erro ao fazer solicitação:', error);
+                    alert("Erro ao apagar arquivo historico.bin");
+                });
+        }
+
     </script>
 </body>
 
