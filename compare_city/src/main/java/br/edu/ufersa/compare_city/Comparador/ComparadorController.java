@@ -2,6 +2,7 @@ package br.edu.ufersa.compare_city.comparador;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Stack;
@@ -48,17 +49,10 @@ public class ComparadorController {
     }
 
     @PostMapping("/limparPilha")
-    public void limparPilha(HttpServletResponse response) throws IOException {
-        String caminhoArquivo = "historico.bin";
-
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(caminhoArquivo);
-        
-            // Truncar o conteúdo do arquivo, efetivamente limpando-o
-            fileOutputStream.getChannel().truncate(0);
-            fileOutputStream.close();
-
-            // Definir o status da resposta como 200 (OK)
+    public void limparPilha(HttpServletResponse response) throws IOException {    
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("historico.bin"))) {
+            Stack<LocalDate> pilhaVazia = new Stack<>(); // Criar uma pilha vazia
+            outputStream.writeObject(pilhaVazia);
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write("Pilha limpa com sucesso!");
         } catch (IOException e) {
