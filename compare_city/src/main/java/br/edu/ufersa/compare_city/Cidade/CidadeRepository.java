@@ -1,6 +1,7 @@
 package br.edu.ufersa.compare_city.cidade;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,15 +31,12 @@ public class CidadeRepository {
     private static List<Cidade> todasAsCidades = new LinkedList<>();
     private final String rootPath = System.getProperty("user.dir");
 
-
     public CidadeRepository() {
     }
 
     public CidadeRepository(String cidadeUm, String ufUm, String cidadeDois, String ufDois) {
         buscarCidades(cidadeUm, ufUm, cidadeDois, ufDois);
     }
-
-
 
     /**
      * <p>
@@ -59,15 +57,17 @@ public class CidadeRepository {
         cidadesBuscadas = new ArrayList<Cidade>(2);
         Cidade novaCidadeUm = new Cidade();
         Cidade novaCidadeDois = new Cidade();
-        novaCidadeUm.setNome(cidadeUm); novaCidadeUm.setUf(ufUm);
-        novaCidadeDois.setNome(cidadeDois); novaCidadeDois.setUf(ufDois);
+        novaCidadeUm.setNome(cidadeUm);
+        novaCidadeUm.setUf(ufUm);
+        novaCidadeDois.setNome(cidadeDois);
+        novaCidadeDois.setUf(ufDois);
 
         try {
             if (existe(novaCidadeUm)) {
                 int indexUm = pegarPosicao(novaCidadeUm);
                 novaCidadeUm = todasAsCidades.get(indexUm);
                 cidadesBuscadas.add(novaCidadeUm);
-                
+
                 if (existe(novaCidadeDois)) {
                     int indexDois = pegarPosicao(novaCidadeDois);
                     novaCidadeDois = todasAsCidades.get(indexDois);
@@ -76,7 +76,7 @@ public class CidadeRepository {
                 }
                 buscarUmaCidade(cidadeDois, ufDois);
                 extrairCidade(cidadeDois);
-                return "redirect:/cidades/comparacao"; 
+                return "redirect:/cidades/comparacao";
             }
 
             if (existe(novaCidadeDois)) {
@@ -92,7 +92,7 @@ public class CidadeRepository {
              * Cria novo arquvo Json para o script Python escrever nele
              */
             File arquivoJson = new File(rootPath + "/dados.json");
-            if (!(arquivoJson.exists())) {    
+            if (!(arquivoJson.exists())) {
                 arquivoJson.createNewFile();
             }
 
@@ -103,7 +103,7 @@ public class CidadeRepository {
                 buscarUmaCidade(cidadeDois, ufDois);
                 extrairCidade(cidadeDois);
                 long tempoFinal = System.currentTimeMillis();
-                System.out.println("Tempo total das duas buscas e extrações: "+(tempoFinal-tempoInicial)+"ms");
+                System.out.println("Tempo total das duas buscas e extrações: " + (tempoFinal - tempoInicial) + "ms");
                 return "redirect:/cidades/comparacao";
             }
 
@@ -116,14 +116,13 @@ public class CidadeRepository {
                 int exitCodeP1 = p1.waitFor();
                 int exitCodeP2 = p2.waitFor();
 
-                
                 if (exitCodeP1 != 0) {
 
                     BufferedReader errorReader = new BufferedReader(new InputStreamReader(p1.getErrorStream()));
                     StringBuilder errorOutput = new StringBuilder();
                     String errorLine;
                     while ((errorLine = errorReader.readLine()) != null) {
-                    errorOutput.append(errorLine).append("\n");
+                        errorOutput.append(errorLine).append("\n");
                     }
                     throw new Exception("Erro ao executar script Python: " + errorOutput.toString());
                 }
@@ -134,52 +133,52 @@ public class CidadeRepository {
                     StringBuilder errorOutput = new StringBuilder();
                     String errorLine;
                     while ((errorLine = errorReader.readLine()) != null) {
-                    errorOutput.append(errorLine).append("\n");
+                        errorOutput.append(errorLine).append("\n");
                     }
                     throw new Exception("Erro ao executar script Python: " + errorOutput.toString());
                 }
 
                 extrairCidade(cidadeUm, cidadeDois);
 
-            } catch(IOException | InterruptedException e) {
+            } catch (IOException | InterruptedException e) {
                 e.getMessage();
                 e.printStackTrace();
                 throw e;
             }
             long timeFinal = System.currentTimeMillis();
             System.out.println("tempo de execução dos dois processos do programa: " + (timeFinal - timeInicial) + "ms");
-            
-        } catch (Exception e) {return e.getMessage();}
+
+        } catch (Exception e) {
+            return e.getMessage();
+        }
 
         return "redirect:/cidades/comparacao";
     }
 
-
-
-
     /**
      * <p>
-     * Executa o programa Python e raspa os dados da cidade especificada pelos parâmetros
+     * Executa o programa Python e raspa os dados da cidade especificada pelos
+     * parâmetros
      * 
      * @param cidade - nome da cidade a ser buscada
-     * @param uf - nome da unidade federativa da cidade a ser buscada
-     * @throws Exception caso algum erro ocorra na execução do programa de raspagem 
+     * @param uf     - nome da unidade federativa da cidade a ser buscada
+     * @throws Exception caso algum erro ocorra na execução do programa de raspagem
      */
-    private void buscarUmaCidade(String cidade, String uf) throws Exception{
+    private void buscarUmaCidade(String cidade, String uf) throws Exception {
         long timeInicial = System.currentTimeMillis();
 
         File arquivoJson = new File(rootPath + "/dados.json");
-        if (!arquivoJson.exists()) {    
+        if (!arquivoJson.exists()) {
             arquivoJson.createNewFile();
         }
 
         try {
 
             ProcessBuilder pb = new ProcessBuilder("python", rootPath + "/index.py", uf, cidade);
-            Process p = pb.start();             // Executa o programa Python
-            int exitCode = p.waitFor();         // Aguarda o término do programa Python
-            
-            if (exitCode != 0) {                // Verifica se houve algum erro na execução do programa
+            Process p = pb.start(); // Executa o programa Python
+            int exitCode = p.waitFor(); // Aguarda o término do programa Python
+
+            if (exitCode != 0) { // Verifica se houve algum erro na execução do programa
 
                 BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
                 StringBuilder errorOutput = new StringBuilder();
@@ -189,16 +188,13 @@ public class CidadeRepository {
                 }
                 throw new Exception("Erro ao executar script Python: " + errorOutput.toString());
             }
-        } catch(IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.getMessage();
             e.printStackTrace();
-        } 
+        }
         long timeFinal = System.currentTimeMillis();
         System.out.println("tempo de execução do programa Python: " + (timeFinal - timeInicial) + "ms");
     }
-
-    
-
 
     /**
      * <p>
@@ -220,9 +216,8 @@ public class CidadeRepository {
                 JSONObject dadosJSON = (JSONObject) objetoJSON.get(nomeCidades[i]);
                 Cidade cidade = new Cidade();
 
-
                 cidade.setNome(nomeCidades[i]);
-                
+
                 String uf = (String) dadosJSON.get("uf");
                 cidade.setUf(uf);
 
@@ -234,7 +229,7 @@ public class CidadeRepository {
                     populacao = populacao.split(" ")[0];
                     cidade.setPopulacao(Integer.parseInt(populacao));
                 }
-                
+
                 String densidadeDemografica = (String) dadosJSON.get("densidade_demografica");
                 if (densidadeDemografica.contains("Sem dados") || densidadeDemografica.contains("- ")) {
                     cidade.setDensidadeDemografica(-1);
@@ -273,7 +268,8 @@ public class CidadeRepository {
                     cidade.setPopulacaoOcupada(Double.parseDouble(populacaoOcupada));
                 }
 
-                String percentualRendimento = (String) dadosJSON.get("percentual_rendimento_nominal_per_capita_de_ate_dois_tercos_salario_minimo");
+                String percentualRendimento = (String) dadosJSON
+                        .get("percentual_rendimento_nominal_per_capita_de_ate_dois_tercos_salario_minimo");
                 if (percentualRendimento.contains("Sem dados") || percentualRendimento.contains("- ")) {
                     cidade.setPercentualRendimentoNominalPerCapita(-1);
                 } else {
@@ -335,7 +331,7 @@ public class CidadeRepository {
                     docentesFundamental = docentesFundamental.split(" ")[0];
                     cidade.setDocentesFundamental(Integer.parseInt(docentesFundamental));
                 }
-                
+
                 String docentesMedio = (String) dadosJSON.get("docentes_medio");
                 if (docentesMedio.contains("Sem dados") || docentesMedio.contains("- ")) {
                     cidade.setDocentesMedio(-1);
@@ -479,18 +475,15 @@ public class CidadeRepository {
                 String bioma = (String) dadosJSON.get("bioma");
                 bioma = bioma.trim();
                 cidade.setBioma(bioma);
-                
+
                 String sistemaCosteiro = (String) dadosJSON.get("sistema_costeiro_marinho");
                 sistemaCosteiro = sistemaCosteiro.trim();
                 cidade.setSistemaCosteiroMarinho(sistemaCosteiro);
 
-
                 cidadesBuscadas.add(cidade);
                 todasAsCidades.add(cidade);
-            }            
-            
+            }
 
-            // GRAVA PILHA NUM ARQUIVO BINARIO
             dataAtual.push(LocalDate.now());
             escreverPilha(dataAtual);
 
@@ -501,7 +494,7 @@ public class CidadeRepository {
 
         long timeFinal = System.currentTimeMillis();
         System.out.println("tempo de execução da extração do Json: " + (timeFinal - timeInicial) + "ms");
-        
+
         try {
             Files.deleteIfExists(Path.of(rootPath + "/dados.json"));
         } catch (IOException e) {
@@ -510,13 +503,9 @@ public class CidadeRepository {
         }
     }
 
-
-
     public List<Cidade> getListaCidades() {
         return cidadesBuscadas;
     }
-
-
 
     @SuppressWarnings("unchecked")
     public Stack<LocalDate> lerPilha() {
@@ -524,6 +513,11 @@ public class CidadeRepository {
 
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("historico.bin"))) {
             dataAtual = (Stack<LocalDate>) inputStream.readObject();
+            if (dataAtual == null) {
+                dataAtual = new Stack<>();
+            }
+        } catch (EOFException e) {
+            System.out.println("Arquivo corrompido, recrie-o");
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo não encontrado. Criando arquivo...");
             escreverPilha(dataAtual); // Cria um novo arquivo
@@ -536,10 +530,10 @@ public class CidadeRepository {
     private void escreverPilha(Stack<LocalDate> dataAtual) {
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("historico.bin"))) {
             outputStream.writeObject(dataAtual);
-        } catch (IOException e) {e.printStackTrace();}
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
-
 
     private boolean existe(Cidade cidade) {
         for (Cidade city : todasAsCidades) {
@@ -555,7 +549,7 @@ public class CidadeRepository {
             if (city.getUf().equals(cidade.getUf()) && city.getNome().equals(cidade.getNome())) {
                 return cont;
             }
-            cont++;                
+            cont++;
         }
         return -1;
     }
